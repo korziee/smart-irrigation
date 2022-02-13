@@ -1,0 +1,11 @@
+{
+  "name": "smart-irrigation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Kory Porter <kory.porter@hotmail.com>",
+  "license": "MIT",
+  "packageManager": "yarn@3.1.1",
+  "workspaces": [
+    "packages/*"
+  ]
+}

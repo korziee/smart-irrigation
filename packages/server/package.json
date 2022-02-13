@@ -1,0 +1,4 @@
+{
+  "name": "@smart-irrigation/server",
+  "packageManager": "yarn@3.1.1"
+}
