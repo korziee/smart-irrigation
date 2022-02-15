@@ -17,5 +17,13 @@
     "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.5.1",
     "typescript": "^4.5.5"
+  },
+  "dependenciesMeta": {
+    "@prisma/client@3.9.2": {
+      "unplugged": true
+    },
+    "prisma@3.9.2": {
+      "unplugged": true
+    }
   }
 }

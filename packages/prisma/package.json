@@ -1,0 +1,20 @@
+{
+  "name": "@smart-irrigation/prisma",
+  "main": "prisma-client/index.js",
+  "version": "1.0.0",
+  "packageManager": "yarn@3.1.1",
+  "scripts": {
+    "db:pull": "yarn prisma db pull",
+    "db:generate": "yarn pnpify prisma generate"
+  },
+  "prisma": {
+    "schema": "schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^3.9.2",
+    "@yarnpkg/pnpify": "^3.1.1-rc.15"
+  },
+  "devDependencies": {
+    "prisma": "^3.9.2"
+  }
+}
