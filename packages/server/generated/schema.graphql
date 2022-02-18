@@ -3,23 +3,66 @@
 # ------------------------------------------------------
 
 type MicroController {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """Micro controller ID"""
+  id: ID!
+
+  """The micro controller's friendly name"""
+  name: String!
+
+  """IP address of the micro controller"""
+  ipAddress: Float!
+
+  """Describes if the micro controller is online and active"""
+  online: Boolean!
+
+  """Describes if the micro controller is online and active"""
+  lastBoot: DateTime!
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Sensor {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """Sensor ID"""
+  id: ID!
+
+  """Zone ID for which this sensor resides"""
+  zoneId: ID!
+
+  """The type of sensor"""
+  state: SensorType!
+}
+
+enum SensorType {
+  moisture
 }
 
 type Solenoid {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """ID of the Solenoid"""
+  id: ID!
+
+  """Zone ID for which this solenoid resides"""
+  zoneId: ID!
+
+  """Solenoid state"""
+  state: SolenoidState!
+}
+
+enum SolenoidState {
+  on
+  off
+  forced_on
+  forced_off
 }
 
 type Zone {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """Zone ID"""
+  id: ID!
+
+  """Controller ID for which this zone is controlled by"""
+  controllerId: ID!
 }
 
 type Query {
