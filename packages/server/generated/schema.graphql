@@ -1,0 +1,89 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type MicroController {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Sensor {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Solenoid {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Zone {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Query {
+  microController(id: Int!): MicroController!
+  sensor(id: Int!): Sensor!
+  solenoid(id: Int!): Solenoid!
+  zone(id: Int!): Zone!
+}
+
+type Mutation {
+  createMicroController(createMicroControllerInput: CreateMicroControllerInput!): MicroController!
+  updateMicroController(updateMicroControllerInput: UpdateMicroControllerInput!): MicroController!
+  removeMicroController(id: Int!): MicroController!
+  createSensor(createSensorInput: CreateSensorInput!): Sensor!
+  updateSensor(updateSensorInput: UpdateSensorInput!): Sensor!
+  removeSensor(id: Int!): Sensor!
+  createSolenoid(createSolenoidInput: CreateSolenoidInput!): Solenoid!
+  updateSolenoid(updateSolenoidInput: UpdateSolenoidInput!): Solenoid!
+  removeSolenoid(id: Int!): Solenoid!
+  createZone(createZoneInput: CreateZoneInput!): Zone!
+  updateZone(updateZoneInput: UpdateZoneInput!): Zone!
+  removeZone(id: Int!): Zone!
+}
+
+input CreateMicroControllerInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateMicroControllerInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateSensorInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateSensorInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateSolenoidInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateSolenoidInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateZoneInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateZoneInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}

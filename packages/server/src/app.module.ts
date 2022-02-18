@@ -1,10 +1,26 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { GraphQLModule } from '@nestjs/graphql';
+import { join } from 'path';
+
+import { PrismaModule } from './prisma/prisma.module';
+import { MicroControllerModule } from './micro-controller/micro-controller.module';
+import { SensorModule } from './sensor/sensor.module';
+import { SolenoidModule } from './solenoid/solenoid.module';
+import { ZoneModule } from './zone/zone.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    GraphQLModule.forRoot({
+      autoSchemaFile: join(process.cwd(), 'generated/schema.graphql'),
+      sortSchema: false,
+    }),
+    PrismaModule,
+    MicroControllerModule,
+    SensorModule,
+    SolenoidModule,
+    ZoneModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
