@@ -1,35 +1,38 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { MicroControllerService } from './micro-controller.service';
 import { MicroController } from './entities/micro-controller.entity';
-import { CreateMicroControllerInput } from './dto/create-micro-controller.input';
-import { UpdateMicroControllerInput } from './dto/update-micro-controller.input';
+import { ControllerHeartbeatInput } from './dto/controller-heartbeat.input';
+import { Config } from '../config/entities/config.entity';
+import { ConfigService } from '../config/config.service';
 
 @Resolver(() => MicroController)
 export class MicroControllerResolver {
-  constructor(private readonly microControllerService: MicroControllerService) {}
+  constructor(
+    private readonly microControllerService: MicroControllerService,
+    private readonly configService: ConfigService,
+  ) {}
 
-  @Mutation(() => MicroController)
-  createMicroController(@Args('createMicroControllerInput') createMicroControllerInput: CreateMicroControllerInput) {
-    return this.microControllerService.create(createMicroControllerInput);
-  }
-
-  @Query(() => [MicroController], { name: 'microController' })
-  findAll() {
-    return this.microControllerService.findAll();
-  }
-
-  @Query(() => MicroController, { name: 'microController' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.microControllerService.findOne(id);
+  @ResolveField('config', () => Config, {
+    nullable: true,
+    description: 'Config for the micro controller',
+  })
+  async getConfigForController(@Parent() controller: MicroController) {
+    return this.configService.findById(controller.configId);
   }
 
   @Mutation(() => MicroController)
-  updateMicroController(@Args('updateMicroControllerInput') updateMicroControllerInput: UpdateMicroControllerInput) {
-    return this.microControllerService.update(updateMicroControllerInput.id, updateMicroControllerInput);
-  }
-
-  @Mutation(() => MicroController)
-  removeMicroController(@Args('id', { type: () => Int }) id: number) {
-    return this.microControllerService.remove(id);
+  controllerHeartbeat(
+    @Args('controllerHeartbeatInput')
+    controllerHeartbeatInput: ControllerHeartbeatInput,
+  ) {
+    return this.microControllerService.handleControllerOnlineHook(
+      controllerHeartbeatInput.id,
+    );
   }
 }

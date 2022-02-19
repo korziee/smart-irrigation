@@ -7,6 +7,7 @@ import { MicroControllerModule } from './micro-controller/micro-controller.modul
 import { SensorModule } from './sensor/sensor.module';
 import { SolenoidModule } from './solenoid/solenoid.module';
 import { ZoneModule } from './zone/zone.module';
+import { ConfigModule } from './config/config.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ZoneModule } from './zone/zone.module';
     SensorModule,
     SolenoidModule,
     ZoneModule,
+    ConfigModule,
   ],
   controllers: [],
   providers: [],

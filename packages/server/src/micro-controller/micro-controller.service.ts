@@ -1,26 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMicroControllerInput } from './dto/create-micro-controller.input';
-import { UpdateMicroControllerInput } from './dto/update-micro-controller.input';
+import { MicroController } from './entities/micro-controller.entity';
+import { MicroControllerRepository } from './micro-controller.repository';
 
 @Injectable()
 export class MicroControllerService {
-  create(createMicroControllerInput: CreateMicroControllerInput) {
-    return 'This action adds a new microController';
-  }
+  constructor(private readonly repository: MicroControllerRepository) {}
 
-  findAll() {
-    return `This action returns all microController`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} microController`;
-  }
-
-  update(id: number, updateMicroControllerInput: UpdateMicroControllerInput) {
-    return `This action updates a #${id} microController`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} microController`;
+  public async handleControllerOnlineHook(
+    controllerId: string,
+  ): Promise<MicroController> {
+    console.log('here');
+    return this.repository.update(controllerId, { online: true });
   }
 }
