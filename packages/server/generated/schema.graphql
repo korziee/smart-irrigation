@@ -41,6 +41,20 @@ type Config {
   createdAt: DateTime!
 }
 
+type SensorReading {
+  """Sensor Reading ID"""
+  id: ID!
+
+  """The ID of the sensor from which this reading came"""
+  sensorId: ID!
+
+  """When this reading was created"""
+  createdAt: DateTime!
+
+  """The actual sensor reading"""
+  reading: Float!
+}
+
 type Solenoid {
   """ID of the Solenoid"""
   id: ID!
@@ -73,6 +87,7 @@ type Query {
 
 type Mutation {
   controllerHeartbeat(controllerHeartbeatInput: ControllerHeartbeatInput!): MicroController!
+  sensorReading(sensorReadingInput: SensorReadingInput!): SensorReading!
   updateSolenoid(updateSolenoidInput: UpdateSolenoidInput!): Solenoid!
   createZone(createZoneInput: CreateZoneInput!): Zone!
   updateZone(updateZoneInput: UpdateZoneInput!): Zone!
@@ -81,6 +96,11 @@ type Mutation {
 
 input ControllerHeartbeatInput {
   id: ID!
+}
+
+input SensorReadingInput {
+  sensorId: ID!
+  reading: Int!
 }
 
 input UpdateSolenoidInput {

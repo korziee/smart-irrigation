@@ -50,7 +50,8 @@
     "graphql": "^15",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.5.4"
+    "rxjs": "^7.5.4",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.3.1",
@@ -66,6 +67,7 @@
     "@types/rimraf": "^3",
     "@types/source-map-support": "^0",
     "@types/supertest": "^2.0.11",
+    "@types/uuid": "^8",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "eslint": "^8.9.0",

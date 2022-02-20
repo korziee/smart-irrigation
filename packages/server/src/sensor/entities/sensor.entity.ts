@@ -15,5 +15,5 @@ export class Sensor {
   zoneId: string;
 
   @Field(() => sensor_type, { description: 'The type of sensor' })
-  state: SensorType;
+  type: SensorType;
 }
