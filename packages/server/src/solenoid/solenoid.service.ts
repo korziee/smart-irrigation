@@ -1,26 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSolenoidInput } from './dto/create-solenoid.input';
-import { UpdateSolenoidInput } from './dto/update-solenoid.input';
+import { ZoneService } from '../zone/zone.service';
+import { MicroControllerService } from '../micro-controller/micro-controller.service';
+import { Solenoid } from './entities/solenoid.entity';
+import { SolenoidRepository } from './solenoid.repository';
 
 @Injectable()
 export class SolenoidService {
-  create(createSolenoidInput: CreateSolenoidInput) {
-    return 'This action adds a new solenoid';
-  }
+  constructor(
+    private readonly repository: SolenoidRepository,
+    private readonly microControllerService: MicroControllerService,
+    private readonly zoneService: ZoneService,
+  ) {}
 
-  findAll() {
-    return `This action returns all solenoid`;
-  }
+  /**
+   * Updates local and remote states
+   */
+  public async updateSolenoidState(
+    solenoidId: string,
+    state: Solenoid['state'],
+  ): Promise<Solenoid> {
+    // update state in repository
+    const solenoid = await this.repository.updateState(solenoidId, state);
 
-  findOne(id: number) {
-    return `This action returns a #${id} solenoid`;
-  }
+    const controller = await this.zoneService.getControllerForZone(
+      solenoid.zoneId,
+    );
 
-  update(id: number, updateSolenoidInput: UpdateSolenoidInput) {
-    return `This action updates a #${id} solenoid`;
-  }
+    // tell controller to update remote state
+    await this.microControllerService.sendControllerMessage(controller.id, {
+      type: 'UPDATE_SOLENOID_STATE',
+      data: {
+        state,
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} solenoid`;
+    // return updated solenoid
+    return solenoid;
   }
 }

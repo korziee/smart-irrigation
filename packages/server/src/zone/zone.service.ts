@@ -1,26 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { CreateZoneInput } from './dto/create-zone.input';
-import { UpdateZoneInput } from './dto/update-zone.input';
+import { MicroControllerService } from '../micro-controller/micro-controller.service';
+import { MicroController } from '../micro-controller/entities/micro-controller.entity';
+import { ZoneRepository } from './zone.repository';
 
 @Injectable()
 export class ZoneService {
-  create(createZoneInput: CreateZoneInput) {
-    return 'This action adds a new zone';
-  }
+  constructor(
+    private readonly repository: ZoneRepository,
+    private readonly microControllerService: MicroControllerService,
+  ) {}
 
-  findAll() {
-    return `This action returns all zone`;
-  }
+  public async getControllerForZone(zoneId: string): Promise<MicroController> {
+    const zone = await this.repository.getZone(zoneId);
 
-  findOne(id: number) {
-    return `This action returns a #${id} zone`;
-  }
-
-  update(id: number, updateZoneInput: UpdateZoneInput) {
-    return `This action updates a #${id} zone`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} zone`;
+    return this.microControllerService.getControllerById(zone.controllerId);
   }
 }

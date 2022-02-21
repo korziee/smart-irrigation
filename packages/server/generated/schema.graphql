@@ -55,24 +55,6 @@ type SensorReading {
   reading: Float!
 }
 
-type Solenoid {
-  """ID of the Solenoid"""
-  id: ID!
-
-  """Zone ID for which this solenoid resides"""
-  zoneId: ID!
-
-  """Solenoid state"""
-  state: SolenoidState!
-}
-
-enum SolenoidState {
-  on
-  off
-  forced_on
-  forced_off
-}
-
 type Zone {
   """Zone ID"""
   id: ID!
@@ -82,16 +64,12 @@ type Zone {
 }
 
 type Query {
-  zone(id: Int!): Zone!
+  zone: [Zone!]!
 }
 
 type Mutation {
   controllerHeartbeat(controllerHeartbeatInput: ControllerHeartbeatInput!): MicroController!
   sensorReading(sensorReadingInput: SensorReadingInput!): SensorReading!
-  updateSolenoid(updateSolenoidInput: UpdateSolenoidInput!): Solenoid!
-  createZone(createZoneInput: CreateZoneInput!): Zone!
-  updateZone(updateZoneInput: UpdateZoneInput!): Zone!
-  removeZone(id: Int!): Zone!
 }
 
 input ControllerHeartbeatInput {
@@ -101,21 +79,4 @@ input ControllerHeartbeatInput {
 input SensorReadingInput {
   sensorId: ID!
   reading: Int!
-}
-
-input UpdateSolenoidInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input CreateZoneInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateZoneInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
 }

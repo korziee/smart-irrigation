@@ -1762,6 +1762,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/axios@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "@nestjs/axios@npm:0.0.6"
+  dependencies:
+    axios: 0.26.0
+  peerDependencies:
+    "@nestjs/common": ^7.0.0 || ^8.0.0
+    reflect-metadata: ^0.1.12
+    rxjs: ^6.0.0 || ^7.0.0
+  checksum: 4628d3c443b5de0f5644e38a52b877f84e592f4a71be8b2f88ad0d5f9b68a450dcd1c0313e59c09a02753b8f2773234c14901a553c60185f64c1ff68950aa97b
+  languageName: node
+  linkType: hard
+
 "@nestjs/cli@npm:^8.2.0":
   version: 8.2.0
   resolution: "@nestjs/cli@npm:8.2.0"
@@ -2206,6 +2219,7 @@ __metadata:
     "@graphql-codegen/cli": 2.3.1
     "@graphql-codegen/typescript": 2.4.2
     "@nestjs/apollo": ^10.0.2
+    "@nestjs/axios": ^0.0.6
     "@nestjs/cli": ^8.2.0
     "@nestjs/common": ^8.2.6
     "@nestjs/config": ^1.1.7
@@ -3728,6 +3742,15 @@ __metadata:
   dependencies:
     follow-redirects: ^1.14.4
   checksum: 468cf496c08a6aadfb7e699bebdac02851e3043d4e7d282350804ea8900e30d368daa6e3cd4ab83b8ddb5a3b1e17a5a21ada13fc9cebd27b74828f47a4236316
+  languageName: node
+  linkType: hard
+
+"axios@npm:0.26.0":
+  version: 0.26.0
+  resolution: "axios@npm:0.26.0"
+  dependencies:
+    follow-redirects: ^1.14.8
+  checksum: d7a8b898f4157bedeb2e06c03b16133b91b354c041205bea732ce58b7a21f373d22057b0eea0d482838145ce6ff482b359750d9bcb8dd19d45e3928e3c65c280
   languageName: node
   linkType: hard
 
@@ -5731,6 +5754,16 @@ __metadata:
     debug:
       optional: true
   checksum: 40c67899c2e3149a27e8b6498a338ff27f39fe138fde8d7f0756cb44b073ba0bfec3d52af28f20c5bdd67263d564d0d8d7b5efefd431de95c18c42f7b4aef457
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.14.8":
+  version: 1.14.9
+  resolution: "follow-redirects@npm:1.14.9"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: f5982e0eb481818642492d3ca35a86989c98af1128b8e1a62911a3410621bc15d2b079e8170b35b19d3bdee770b73ed431a257ed86195af773771145baa57845
   languageName: node
   linkType: hard
 

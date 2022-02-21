@@ -32,7 +32,13 @@ export class MicroControllerRepository {
       data: update,
     });
 
-    console.log('after');
+    return this.mapDbRowToConfig(controller);
+  }
+
+  public async findById(controllerId: string): Promise<MicroController> {
+    const controller = await this.prisma.controller.findUnique({
+      where: { id: controllerId },
+    });
 
     return this.mapDbRowToConfig(controller);
   }
