@@ -74,11 +74,17 @@ describe('MicroControllerService', () => {
         } as any);
 
         await service.sendControllerMessage('controller-1', {
-          data: {} as any,
+          data: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            something: true,
+          },
           type,
         });
 
-        expect(httpService.post).toHaveBeenCalledWith(`1.2.3.4/${endpoint}`);
+        expect(httpService.post).toHaveBeenCalledWith(`1.2.3.4/${endpoint}`, {
+          something: true,
+        });
       },
     );
   });

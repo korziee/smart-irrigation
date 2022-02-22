@@ -28,9 +28,18 @@ export class MicroControllerService {
   ): Promise<void> {
     const controller = await this.repository.findById(controllerId);
 
+    if (!controller.ipAddress) {
+      throw new Error(
+        'Cannot send message to a micro-controller without an IP',
+      );
+    }
+
     const route = this.messageTypeRouteMap[message.type];
 
-    await this.httpService.post(`${controller.ipAddress}/${route}`);
+    await this.httpService.post(
+      `http://${controller.ipAddress}/${route}`,
+      message.data,
+    );
   }
 
   public async getControllerById(
