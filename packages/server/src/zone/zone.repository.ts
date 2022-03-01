@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { zone } from '@smart-irrigation/prisma';
+import type { Prisma, zone } from '@smart-irrigation/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 import { Zone } from './entities/zone.entity';
 
@@ -16,7 +16,13 @@ export class ZoneRepository {
     return zone;
   }
 
-  public async getZone(zoneId: string): Promise<Zone> {
+  public async findMany(where?: Prisma.zoneFindManyArgs) {
+    const zones = await this.prisma.zone.findMany(where);
+
+    return zones.map(this.mapDbRowToZone);
+  }
+
+  public async findOne(zoneId: string): Promise<Zone> {
     const zone = await this.prisma.zone.findUnique({
       where: {
         id: zoneId,

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { sensor, sensor_reading } from '@smart-irrigation/prisma';
+import { Prisma, sensor, sensor_reading } from '@smart-irrigation/prisma';
 import { v4 as uuidv4 } from 'uuid';
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -46,5 +46,13 @@ export class SensorRepository {
     });
 
     return this.mapSensorReadingDbRowToSensorReading(newReading);
+  }
+
+  public async findManySensorReadings(
+    query: Prisma.sensor_readingFindManyArgs,
+  ): Promise<SensorReading[]> {
+    const readings = await this.prisma.sensor_reading.findMany(query);
+
+    return readings.map(this.mapSensorReadingDbRowToSensorReading);
   }
 }
