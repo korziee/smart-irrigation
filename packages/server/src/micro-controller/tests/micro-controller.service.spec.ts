@@ -82,9 +82,12 @@ describe('MicroControllerService', () => {
           type,
         });
 
-        expect(httpService.post).toHaveBeenCalledWith(`1.2.3.4/${endpoint}`, {
-          something: true,
-        });
+        expect(httpService.post).toHaveBeenCalledWith(
+          `http://1.2.3.4${endpoint}`,
+          {
+            something: true,
+          },
+        );
       },
     );
   });

@@ -37,7 +37,7 @@ export class MicroControllerService {
     const route = this.messageTypeRouteMap[message.type];
 
     await this.httpService.post(
-      `http://${controller.ipAddress}/${route}`,
+      `http://${controller.ipAddress}${route}`,
       message.data,
     );
   }
