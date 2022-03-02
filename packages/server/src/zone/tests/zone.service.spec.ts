@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { solenoid_state } from '@smart-irrigation/prisma';
 import { solenoidServiceMockFactory } from '../../solenoid/mocks/solenoid.service.mock';
 import { SolenoidService } from '../../solenoid/solenoid.service';
 import { MicroControllerService } from '../../micro-controller/micro-controller.service';
@@ -55,7 +56,7 @@ describe('ZoneService', () => {
         controllerId: 'controller-1',
       };
 
-      zoneRepository.getZone.calledWith('zone-1').mockResolvedValue(zone);
+      zoneRepository.findOne.calledWith('zone-1').mockResolvedValue(zone);
       microControllerService.getControllerById
         .calledWith('controller-1')
         .mockResolvedValue(controller as any);
@@ -66,18 +67,34 @@ describe('ZoneService', () => {
     });
   });
 
-  describe('updateSolenoidState', () => {
-    it('should tell the solenoid service to update the database state', async () => {
-      const solenoid = {
-        id: 'solenoid-1',
-        zoneId: 'zone-1',
-      };
+  describe('updateAllSolenoidsInZone', () => {
+    it('should tell the solenoid service to update the database state for each solenoid', async () => {
+      const solenoids = [
+        {
+          id: 'solenoid-1',
+          zoneId: 'zone-1',
+          state: solenoid_state.off,
+        },
+        {
+          id: 'solenoid-2',
+          zoneId: 'zone-1',
+          state: solenoid_state.off,
+        },
+      ];
+
+      solenoidService.getSolenoidsForZone
+        .calledWith('zone-1')
+        .mockResolvedValue(solenoids);
 
       solenoidService.updateSolenoidState
         .calledWith('solenoid-1', 'on')
-        .mockResolvedValue(solenoid as any);
+        .mockResolvedValue(solenoids[0]);
 
-      zoneRepository.getZone.calledWith('zone-1').mockResolvedValue({
+      solenoidService.updateSolenoidState
+        .calledWith('solenoid-2', 'on')
+        .mockResolvedValue(solenoids[1]);
+
+      zoneRepository.findOne.calledWith('zone-1').mockResolvedValue({
         id: 'zone-1',
         controllerId: 'controller-1',
       });
@@ -89,12 +106,25 @@ describe('ZoneService', () => {
         } as any);
 
       expect(
-        await service.updateSolenoidState('solenoid-1', 'on'),
-      ).toStrictEqual(solenoid);
+        await service.updateAllSolenoidsInZone('zone-1', 'on'),
+      ).toStrictEqual(solenoids);
     });
 
-    it('should ask the controller service to send a state change message', async () => {
-      zoneRepository.getZone.calledWith('zone-1').mockResolvedValue({
+    it('should ask the controller service to send a state change message for each solenoid', async () => {
+      const solenoids = [
+        {
+          id: 'solenoid-1',
+          zoneId: 'zone-1',
+          state: solenoid_state.off,
+        },
+        {
+          id: 'solenoid-2',
+          zoneId: 'zone-1',
+          state: solenoid_state.off,
+        },
+      ];
+
+      zoneRepository.findOne.calledWith('zone-1').mockResolvedValue({
         id: 'zone-1',
         controllerId: 'controller-1',
       });
@@ -105,22 +135,23 @@ describe('ZoneService', () => {
           id: 'controller-1',
         } as any);
 
-      solenoidService.updateSolenoidState.mockResolvedValue({
-        id: 'solenoid-1',
-        zoneId: 'zone-1',
-      } as any);
+      solenoidService.getSolenoidsForZone
+        .calledWith('zone-1')
+        .mockResolvedValue(solenoids);
 
-      await service.updateSolenoidState('solenoid-1', 'off');
+      await service.updateAllSolenoidsInZone('zone-1', 'off');
 
-      expect(microControllerService.sendControllerMessage).toHaveBeenCalledWith(
-        'controller-1',
-        {
+      for (const solenoid of solenoids) {
+        expect(
+          microControllerService.sendControllerMessage,
+        ).toHaveBeenCalledWith('controller-1', {
           type: 'UPDATE_SOLENOID_STATE',
           data: {
             state: 'off',
+            solenoidId: solenoid.id,
           },
-        },
-      );
+        });
+      }
     });
   });
 });

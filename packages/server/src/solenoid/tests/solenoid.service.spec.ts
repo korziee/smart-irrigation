@@ -39,6 +39,10 @@ describe('SolenoidService', () => {
     expect(service).toBeDefined();
   });
 
+  describe('getSolenoidsForZone', () => {
+    it('should return the correct solenoids for given zone');
+  });
+
   describe('updateSolenoidState', () => {
     it('should update the database and return the updated solenoid', async () => {
       const solenoid: Solenoid = {

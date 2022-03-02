@@ -29,7 +29,7 @@ export class ZoneService {
   ): Promise<Solenoid[]> {
     const solenoids = await this.solenoidService.getSolenoidsForZone(zoneId);
 
-    await Promise.all(
+    const updatedSolenoids = await Promise.all(
       solenoids.map(async (solenoid) => {
         const controller = await this.getControllerForZone(solenoid.zoneId);
 
@@ -37,15 +37,16 @@ export class ZoneService {
         await this.microControllerService.sendControllerMessage(controller.id, {
           type: 'UPDATE_SOLENOID_STATE',
           data: {
+            solenoidId: solenoid.id,
             state,
           },
         });
 
-        await this.solenoidService.updateSolenoidState(solenoid.id, state);
+        return this.solenoidService.updateSolenoidState(solenoid.id, state);
       }),
     );
 
-    return solenoids;
+    return updatedSolenoids;
   }
 
   public async getManyZones(zoneIds: string[]): Promise<Zone[]> {
