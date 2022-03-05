@@ -6,14 +6,6 @@ import { SolenoidRepository } from './solenoid.repository';
 export class SolenoidService {
   constructor(private readonly repository: SolenoidRepository) {}
 
-  public async getSolenoidsForZone(zoneId: string): Promise<Solenoid[]> {
-    return this.repository.findMany({
-      where: {
-        zone_id: zoneId,
-      },
-    });
-  }
-
   public async updateSolenoidState(
     solenoidId: string,
     state: Solenoid['state'],

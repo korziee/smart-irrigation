@@ -7,6 +7,6 @@ import { PrismaModule } from '../prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   providers: [SensorResolver, SensorService, SensorRepository],
-  exports: [SensorService],
+  exports: [SensorService, SensorRepository],
 })
 export class SensorModule {}

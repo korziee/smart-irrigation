@@ -51,8 +51,17 @@ CREATE TABLE "solenoid" (
   "state" solenoid_state NOT NULL DEFAULT 'off'
 );
 
+CREATE TABLE "irrigation_job" (
+  "id" varchar PRIMARY KEY,
+  "zone_id" varchar NOT NULL,
+  "active" boolean NOT NULL,
+  "start" timestamp NOT NULL,
+  "end" timestamp NOT NULL
+);
+
 ALTER TABLE "zone" ADD FOREIGN KEY ("controller_id") REFERENCES "controller" ("id");
 ALTER TABLE "sensor" ADD FOREIGN KEY ("zone_id") REFERENCES "zone" ("id");
 ALTER TABLE "sensor_reading" ADD FOREIGN KEY ("sensor_id") REFERENCES "sensor" ("id");
 ALTER TABLE "solenoid" ADD FOREIGN KEY ("zone_id") REFERENCES "zone" ("id");
-ALTER TABLE "controller" ADD FOREIGN KEY ("config_id") REFERENCES "config" ("id")
+ALTER TABLE "controller" ADD FOREIGN KEY ("config_id") REFERENCES "config" ("id");
+ALTER TABLE "irrigation_job" ADD FOREIGN KEY ("zone_id") REFERENCES "zone" ("id");

@@ -5,9 +5,10 @@ import { MicroControllerModule } from '../micro-controller/micro-controller.modu
 import { ZoneRepository } from './zone.repository';
 import { PrismaModule } from '../prisma/prisma.module';
 import { SolenoidModule } from '../solenoid/solenoid.module';
+import { SensorModule } from '../sensor/sensor.module';
 
 @Module({
-  imports: [MicroControllerModule, SolenoidModule, PrismaModule],
+  imports: [MicroControllerModule, SolenoidModule, SensorModule, PrismaModule],
   providers: [ZoneResolver, ZoneService, ZoneRepository],
   exports: [ZoneService],
 })

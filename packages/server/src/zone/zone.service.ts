@@ -5,6 +5,9 @@ import { ZoneRepository } from './zone.repository';
 import { SolenoidService } from '../solenoid/solenoid.service';
 import { Solenoid } from '../solenoid/entities/solenoid.entity';
 import { Zone } from './entities/zone.entity';
+import { SensorReading } from '../sensor/entities/sensor-reading.entity';
+import { SensorRepository } from '../sensor/sensor.repository';
+import { SolenoidRepository } from '../solenoid/solenoid.repository';
 
 @Injectable()
 export class ZoneService {
@@ -12,6 +15,8 @@ export class ZoneService {
     private readonly repository: ZoneRepository,
     private readonly microControllerService: MicroControllerService,
     private readonly solenoidService: SolenoidService,
+    private readonly sensorRepository: SensorRepository,
+    private readonly solenoidRepository: SolenoidRepository,
   ) {}
 
   public async getControllerForZone(zoneId: string): Promise<MicroController> {
@@ -27,7 +32,11 @@ export class ZoneService {
     zoneId: string,
     state: Solenoid['state'],
   ): Promise<Solenoid[]> {
-    const solenoids = await this.solenoidService.getSolenoidsForZone(zoneId);
+    const solenoids = await this.solenoidRepository.findMany({
+      where: {
+        zone_id: zoneId,
+      },
+    });
 
     const updatedSolenoids = await Promise.all(
       solenoids.map(async (solenoid) => {
@@ -61,5 +70,31 @@ export class ZoneService {
 
   public async getAllZones(): Promise<Zone[]> {
     return this.repository.findMany();
+  }
+
+  public async getRecentSensorReadingsForZone(
+    zoneId: string,
+    query: {
+      take?: number;
+      from?: Date;
+      to?: Date;
+      order?: 'asc' | 'desc';
+    },
+  ): Promise<SensorReading[]> {
+    return this.sensorRepository.findManySensorReadings({
+      where: {
+        sensor: {
+          zone_id: zoneId,
+        },
+        createdAt: {
+          gte: query.from,
+          lte: query.to,
+        },
+      },
+      orderBy: {
+        createdAt: query.order,
+      },
+      take: query.take,
+    });
   }
 }

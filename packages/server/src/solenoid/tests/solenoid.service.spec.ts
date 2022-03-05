@@ -27,23 +27,6 @@ describe('SolenoidService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getSolenoidsForZone', () => {
-    it('should return the correct solenoids for given zone', async () => {
-      const mockSolenoids = [{ id: 1 }, { id: 2 }];
-
-      solenoidRepository.findMany.mockResolvedValue(mockSolenoids as any);
-
-      const solenoids = await service.getSolenoidsForZone('zone-1');
-
-      expect(solenoidRepository.findMany).toHaveBeenCalledWith({
-        where: {
-          zone_id: 'zone-1',
-        },
-      });
-      expect(solenoids).toStrictEqual(mockSolenoids);
-    });
-  });
-
   describe('updateSolenoidState', () => {
     it('should update the database and return the updated solenoid', async () => {
       const solenoid: Solenoid = {

@@ -50,12 +50,22 @@ model solenoid {
 }
 
 model zone {
-  id            String     @id @db.VarChar
-  zone_name     String?    @db.VarChar
-  controller_id String     @db.VarChar
-  controller    controller @relation(fields: [controller_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  sensor        sensor[]
-  solenoid      solenoid[]
+  id             String           @id @db.VarChar
+  zone_name      String?          @db.VarChar
+  controller_id  String           @db.VarChar
+  controller     controller       @relation(fields: [controller_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  irrigation_job irrigation_job[]
+  sensor         sensor[]
+  solenoid       solenoid[]
+}
+
+model irrigation_job {
+  id      String   @id @db.VarChar
+  zone_id String   @db.VarChar
+  active  Boolean
+  start   DateTime @db.Timestamp(6)
+  end     DateTime @db.Timestamp(6)
+  zone    zone     @relation(fields: [zone_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum sensor_type {

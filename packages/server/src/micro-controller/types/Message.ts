@@ -7,6 +7,7 @@ export type Message = {
       type: 'UPDATE_SOLENOID_STATE';
       data: {
         state: Solenoid['state'];
+        solenoidId: string;
       };
     }
   | {

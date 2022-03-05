@@ -7,6 +7,10 @@ import { microControllerServiceMockFactory } from '../../micro-controller/mocks/
 import { zoneRepositoryMockFactory } from '../mocks/zone.repository.mock';
 import { ZoneRepository } from '../zone.repository';
 import { ZoneService } from '../zone.service';
+import { solenoidRepositoryMockFactory } from '../../solenoid/mocks/solenoid.repository.mock';
+import { SolenoidRepository } from '../../solenoid/solenoid.repository';
+import { SensorRepository } from '../../sensor/sensor.repository';
+import { sensorRepositoryMockFactory } from '../../sensor/mocks/sensor.repository.mock';
 
 describe('ZoneService', () => {
   let service: ZoneService;
@@ -15,6 +19,7 @@ describe('ZoneService', () => {
     typeof microControllerServiceMockFactory
   >;
   let solenoidService: ReturnType<typeof solenoidServiceMockFactory>;
+  let solenoidRepository: ReturnType<typeof solenoidRepositoryMockFactory>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,6 +37,14 @@ describe('ZoneService', () => {
           provide: SolenoidService,
           useFactory: solenoidServiceMockFactory,
         },
+        {
+          provide: SolenoidRepository,
+          useFactory: solenoidRepositoryMockFactory,
+        },
+        {
+          provide: SensorRepository,
+          useFactory: sensorRepositoryMockFactory,
+        },
       ],
     }).compile();
 
@@ -39,6 +52,7 @@ describe('ZoneService', () => {
     zoneRepository = module.get(ZoneRepository);
     microControllerService = module.get(MicroControllerService);
     solenoidService = module.get(SolenoidService);
+    solenoidRepository = module.get(SolenoidRepository);
   });
 
   it('should be defined', () => {
@@ -82,9 +96,7 @@ describe('ZoneService', () => {
         },
       ];
 
-      solenoidService.getSolenoidsForZone
-        .calledWith('zone-1')
-        .mockResolvedValue(solenoids);
+      solenoidRepository.findMany.mockResolvedValue(solenoids);
 
       solenoidService.updateSolenoidState
         .calledWith('solenoid-1', 'on')
@@ -108,6 +120,12 @@ describe('ZoneService', () => {
       expect(
         await service.updateAllSolenoidsInZone('zone-1', 'on'),
       ).toStrictEqual(solenoids);
+
+      expect(solenoidRepository.findMany).toHaveBeenCalledWith({
+        where: {
+          zone_id: 'zone-1',
+        },
+      });
     });
 
     it('should ask the controller service to send a state change message for each solenoid', async () => {
@@ -135,9 +153,7 @@ describe('ZoneService', () => {
           id: 'controller-1',
         } as any);
 
-      solenoidService.getSolenoidsForZone
-        .calledWith('zone-1')
-        .mockResolvedValue(solenoids);
+      solenoidRepository.findMany.mockResolvedValue(solenoids);
 
       await service.updateAllSolenoidsInZone('zone-1', 'off');
 

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 
@@ -8,6 +8,7 @@ import { SensorModule } from './sensor/sensor.module';
 import { SolenoidModule } from './solenoid/solenoid.module';
 import { ZoneModule } from './zone/zone.module';
 import { ConfigModule } from './config/config.module';
+import { IrrigationModule } from './irrigation/irrigation.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ConfigModule } from './config/config.module';
     SolenoidModule,
     ZoneModule,
     ConfigModule,
+    IrrigationModule,
   ],
   controllers: [],
   providers: [],

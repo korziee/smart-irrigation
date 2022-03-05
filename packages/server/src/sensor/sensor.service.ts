@@ -12,32 +12,4 @@ export class SensorService {
   ): Promise<SensorReading> {
     return this.repository.createReading(sensorId, reading);
   }
-
-  public async getSensorReadingsForZone(
-    zoneId: string,
-    options: {
-      take?: number;
-      from?: Date;
-      to?: Date;
-      order?: 'asc' | 'desc';
-    },
-  ): Promise<SensorReading[]> {
-    const readings = await this.repository.findManySensorReadings({
-      where: {
-        sensor: {
-          zone_id: zoneId,
-        },
-        createdAt: {
-          gte: options.from,
-          lte: options.to,
-        },
-      },
-      orderBy: {
-        createdAt: options.order,
-      },
-      take: options.take,
-    });
-
-    return readings;
-  }
 }

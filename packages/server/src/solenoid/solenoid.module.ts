@@ -7,6 +7,6 @@ import { PrismaModule } from '../prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   providers: [SolenoidResolver, SolenoidService, SolenoidRepository],
-  exports: [SolenoidService],
+  exports: [SolenoidService, SolenoidRepository],
 })
 export class SolenoidModule {}
