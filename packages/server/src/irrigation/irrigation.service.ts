@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { sub, add } from 'date-fns';
+import { Zone } from '../zone/entities/zone.entity';
 
 import { ZoneService } from '../zone/zone.service';
 import { IrrigationRepository } from './irrigation.repository';
@@ -84,8 +85,7 @@ export class IrrigationService {
     this.logger.log(`Marked the following jobs as inactive:`, expiredJobIds);
   }
 
-  public async irrigateZonesIfRequired() {
-    // fetch zones
+  private async getInactiveZones(): Promise<Zone[]> {
     const activeZoneIds = (await this.repository.getActiveJobs()).map(
       (j) => j.zoneId,
     );
@@ -93,9 +93,16 @@ export class IrrigationService {
     const zonesWithNoActiveJobs = allZones.filter(
       (zone) => !activeZoneIds.includes(zone.id),
     );
+
+    return zonesWithNoActiveJobs;
+  }
+
+  public async irrigateZonesIfRequired() {
+    // fetch inactive zones
+    const inactiveZones = await this.getInactiveZones();
     const fiveMinutesAgo = sub(new Date(), { minutes: 5 });
 
-    for (const zone of zonesWithNoActiveJobs) {
+    for (const zone of inactiveZones) {
       try {
         const readings = await this.zoneService.getRecentSensorReadingsForZone(
           zone.id,
