@@ -9,4 +9,6 @@ export class Zone {
     description: 'Controller ID for which this zone is controlled by',
   })
   controllerId: string;
+
+  zoneName?: string;
 }

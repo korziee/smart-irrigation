@@ -8,6 +8,7 @@ import { Zone } from './entities/zone.entity';
 import { SensorReading } from '../sensor/entities/sensor-reading.entity';
 import { SensorRepository } from '../sensor/sensor.repository';
 import { SolenoidRepository } from '../solenoid/solenoid.repository';
+import { Sensor } from '../sensor/entities/sensor.entity';
 
 @Injectable()
 export class ZoneService {
@@ -33,9 +34,7 @@ export class ZoneService {
     state: Solenoid['state'],
   ): Promise<Solenoid[]> {
     const solenoids = await this.solenoidRepository.findMany({
-      where: {
-        zone_id: zoneId,
-      },
+      zoneId,
     });
 
     const updatedSolenoids = await Promise.all(
@@ -70,6 +69,18 @@ export class ZoneService {
 
   public async getAllZones(): Promise<Zone[]> {
     return this.repository.findMany();
+  }
+
+  public async getSensorsInZone(zoneId: string): Promise<Sensor[]> {
+    return this.sensorRepository.findMany({
+      zoneId,
+    });
+  }
+
+  public async getSolenoidsInZone(zoneId: string): Promise<Solenoid[]> {
+    return this.solenoidRepository.findMany({
+      zoneId,
+    });
   }
 
   public async getRecentSensorReadingsForZone(

@@ -20,10 +20,12 @@ export class SolenoidRepository {
     return solenoid;
   }
 
-  public async findMany(
-    args: Prisma.solenoidFindManyArgs,
-  ): Promise<Solenoid[]> {
-    const results = await this.prisma.solenoid.findMany(args);
+  public async findMany(query?: { zoneId?: string }): Promise<Solenoid[]> {
+    const results = await this.prisma.solenoid.findMany({
+      where: {
+        zone_id: query.zoneId,
+      },
+    });
 
     return results.map(this.mapDbRowToSolenoid);
   }

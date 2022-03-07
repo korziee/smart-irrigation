@@ -55,12 +55,49 @@ type SensorReading {
   reading: Float!
 }
 
+type Sensor {
+  """Sensor ID"""
+  id: ID!
+
+  """Zone ID for which this sensor resides"""
+  zoneId: ID!
+
+  """The type of sensor"""
+  type: SensorType!
+  readings(skip: Int, take: Int!): [SensorReading!]
+}
+
+enum SensorType {
+  moisture
+}
+
+type Solenoid {
+  """ID of the Solenoid"""
+  id: ID!
+
+  """Zone ID for which this solenoid resides"""
+  zoneId: ID!
+
+  """Solenoid state"""
+  state: SolenoidState!
+}
+
+enum SolenoidState {
+  on
+  off
+  forced_on
+  forced_off
+}
+
 type Zone {
   """Zone ID"""
   id: ID!
 
   """Controller ID for which this zone is controlled by"""
   controllerId: ID!
+  sensors: [Sensor!]!
+  solenoids: [Solenoid!]!
+  controller: MicroController!
 }
 
 type Query {

@@ -33,6 +33,16 @@ export class SensorRepository {
     return reading;
   }
 
+  public async findMany(query?: { zoneId?: string }): Promise<Sensor[]> {
+    const sensors = await this.prisma.sensor.findMany({
+      where: {
+        zone_id: query.zoneId,
+      },
+    });
+
+    return sensors.map(this.mapSensorDbRowToSensor);
+  }
+
   public async createReading(
     sensorId: string,
     reading: number,
