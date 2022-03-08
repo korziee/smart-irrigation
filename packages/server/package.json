@@ -11,6 +11,7 @@
     "migrate:create": "node-pg-migrate create -j ts",
     "migrate:up": "node-pg-migrate up --tsconfig=./tsconfig.json",
     "migrate:down": "node-pg-migrate down",
+    "seed": "ts-node seeds/index.ts",
     "start": "yarn nest start",
     "start:dev": "yarn nest start --watch",
     "start:debug": "yarn nest start --debug --watch",

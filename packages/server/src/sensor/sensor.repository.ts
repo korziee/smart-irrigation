@@ -26,7 +26,7 @@ export class SensorRepository {
     const reading = new SensorReading();
 
     reading.id = dbRow.id;
-    reading.createdAt = dbRow.createdAt;
+    reading.createdAt = dbRow.created_at;
     reading.reading = dbRow.reading;
     reading.sensorId = dbRow.sensor_id;
 

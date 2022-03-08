@@ -97,13 +97,13 @@ export class ZoneService {
         sensor: {
           zone_id: zoneId,
         },
-        createdAt: {
+        created_at: {
           gte: query.from,
           lte: query.to,
         },
       },
       orderBy: {
-        createdAt: query.order,
+        created_at: query.order,
       },
       take: query.take,
     });

@@ -11,7 +11,7 @@ export class ConfigRepository {
   private mapDbRowToConfig(dbRow: config): Config {
     const config = new Config();
 
-    config.createdAt = dbRow.createdAt;
+    config.createdAt = dbRow.created_at;
     config.id = dbRow.id;
     config.soilSensorUpdateIntervalMs = dbRow.soil_sensor_update_interval_ms;
 

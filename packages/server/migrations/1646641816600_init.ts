@@ -11,6 +11,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     id: {
       type: 'uuid',
       primaryKey: true,
+      default: pgm.func('gen_random_uuid()'),
     },
     soil_sensor_update_interval_ms: {
       type: 'integer',
@@ -27,6 +28,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     id: {
       type: 'uuid',
       primaryKey: true,
+      default: pgm.func('gen_random_uuid()'),
     },
     friendly_name: {
       type: 'varchar(255)',
@@ -54,6 +56,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     id: {
       type: 'uuid',
       primaryKey: true,
+      default: pgm.func('gen_random_uuid()'),
     },
     name: {
       type: 'varchar(50)',
@@ -69,6 +72,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     id: {
       type: 'uuid',
       primaryKey: true,
+      default: pgm.func('gen_random_uuid()'),
     },
     type: {
       type: 'sensor_type',
@@ -86,6 +90,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     id: {
       type: 'uuid',
       primaryKey: true,
+      default: pgm.func('gen_random_uuid()'),
     },
     sensor_id: {
       type: 'uuid',
@@ -108,6 +113,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     id: {
       type: 'uuid',
       primaryKey: true,
+      default: pgm.func('gen_random_uuid()'),
     },
     zone_id: {
       type: 'uuid',
@@ -126,6 +132,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     id: {
       type: 'uuid',
       primaryKey: true,
+      default: pgm.func('gen_random_uuid()'),
     },
     zone_id: {
       type: 'uuid',

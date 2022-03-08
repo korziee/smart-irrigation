@@ -9,63 +9,69 @@ datasource db {
 }
 
 model config {
-  id                             String       @id @db.VarChar
+  id                             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   soil_sensor_update_interval_ms Int
-  createdAt                      DateTime     @default(now()) @db.Timestamp(6)
+  created_at                     DateTime     @default(dbgenerated("'2022-03-07 10:47:38.174011'::timestamp without time zone")) @db.Timestamp(6)
   controller                     controller[]
 }
 
 model controller {
-  id            String    @id @db.VarChar
-  friendly_name String?   @db.VarChar
-  ip_address    String?   @db.VarChar
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  friendly_name String?   @db.VarChar(255)
+  ip_address    String?   @db.VarChar(15)
   online        Boolean   @default(false)
   last_boot     DateTime? @db.Timestamp(6)
-  config_id     String    @db.VarChar
-  config        config    @relation(fields: [config_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  config_id     String    @db.Uuid
+  config        config    @relation(fields: [config_id], references: [id], onUpdate: NoAction)
   zone          zone[]
 }
 
 model sensor {
-  id             String           @id @db.VarChar
-  zone_id        String           @db.VarChar
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   type           sensor_type
-  zone           zone             @relation(fields: [zone_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  zone_id        String           @db.Uuid
+  zone           zone             @relation(fields: [zone_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   sensor_reading sensor_reading[]
 }
 
 model sensor_reading {
-  id        String   @id @db.VarChar
-  sensor_id String   @db.VarChar
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  reading   Float
-  sensor    sensor   @relation(fields: [sensor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sensor_id  String   @db.Uuid
+  created_at DateTime @default(dbgenerated("'2022-03-07 10:47:38.174011'::timestamp without time zone")) @db.Timestamp(6)
+  reading    Float
+  sensor     sensor   @relation(fields: [sensor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model solenoid {
-  id      String         @id @db.VarChar
-  zone_id String         @db.VarChar
+  id      String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  zone_id String         @db.Uuid
   state   solenoid_state @default(off)
-  zone    zone           @relation(fields: [zone_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  zone    zone           @relation(fields: [zone_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model zone {
-  id             String           @id @db.VarChar
-  zone_name      String?          @db.VarChar
-  controller_id  String           @db.VarChar
-  controller     controller       @relation(fields: [controller_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String?          @db.VarChar(50)
+  controller_id  String?          @db.Uuid
+  controller     controller?      @relation(fields: [controller_id], references: [id], onUpdate: NoAction)
   irrigation_job irrigation_job[]
   sensor         sensor[]
   solenoid       solenoid[]
 }
 
 model irrigation_job {
-  id      String   @id @db.VarChar
-  zone_id String   @db.VarChar
+  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  zone_id String   @db.Uuid
   active  Boolean
   start   DateTime @db.Timestamp(6)
   end     DateTime @db.Timestamp(6)
-  zone    zone     @relation(fields: [zone_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  zone    zone     @relation(fields: [zone_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model pgmigrations {
+  id     Int      @id @default(autoincrement())
+  name   String   @db.VarChar(255)
+  run_on DateTime @db.Timestamp(6)
 }
 
 enum sensor_type {
