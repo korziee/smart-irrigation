@@ -24,7 +24,7 @@ export class ZoneResolver {
     return this.zoneService.getControllerForZone(zone.id);
   }
 
-  @Query(() => [Zone], { name: 'zone' })
+  @Query(() => [Zone], { name: 'zones' })
   findAll() {
     return this.zoneService.getAllZones();
   }

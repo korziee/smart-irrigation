@@ -101,7 +101,7 @@ type Zone {
 }
 
 type Query {
-  zone: [Zone!]!
+  zones: [Zone!]!
 }
 
 type Mutation {

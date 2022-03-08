@@ -8,10 +8,14 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "start:dev": "yarn concurrently -n client,server \"yarn workspace @smart-irrigation/client run start \" \"yarn workspace @smart-irrigation/server run start:dev\""
+  },
   "devDependencies": {
     "@types/eslint": "^8",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
+    "concurrently": "^7.0.0",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",

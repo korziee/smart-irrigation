@@ -10,176 +10,125 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
+  DateTime: any;
 };
 
-export type CreateMicroControllerInput = {
-  /** Example field (placeholder) */
-  exampleField: Scalars['Int'];
+export type Config = {
+  __typename?: 'Config';
+  /** Describes how often the controller should send sensor updates */
+  createdAt: Scalars['DateTime'];
+  /** Config ID */
+  id: Scalars['ID'];
+  /** Describes how often the controller should send sensor updates */
+  soilSensorUpdateIntervalMs: Scalars['Float'];
 };
 
-export type CreateSensorInput = {
-  /** Example field (placeholder) */
-  exampleField: Scalars['Int'];
-};
-
-export type CreateSolenoidInput = {
-  /** Example field (placeholder) */
-  exampleField: Scalars['Int'];
-};
-
-export type CreateZoneInput = {
-  /** Example field (placeholder) */
-  exampleField: Scalars['Int'];
+export type ControllerHeartbeatInput = {
+  id: Scalars['ID'];
 };
 
 export type MicroController = {
   __typename?: 'MicroController';
-  /** Example field (placeholder) */
-  exampleField: Scalars['Int'];
+  /** Config for the micro controller */
+  config?: Maybe<Config>;
+  /** ID of the config this controller should respect */
+  configId: Scalars['String'];
+  /** Micro controller ID */
+  id: Scalars['ID'];
+  /** IP address of the micro controller */
+  ipAddress?: Maybe<Scalars['String']>;
+  /** Describes if the micro controller is online and active */
+  lastBoot?: Maybe<Scalars['DateTime']>;
+  /** The micro controller's friendly name */
+  name?: Maybe<Scalars['String']>;
+  /** Describes if the micro controller is online and active */
+  online: Scalars['Boolean'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createMicroController: MicroController;
-  createSensor: Sensor;
-  createSolenoid: Solenoid;
-  createZone: Zone;
-  removeMicroController: MicroController;
-  removeSensor: Sensor;
-  removeSolenoid: Solenoid;
-  removeZone: Zone;
-  updateMicroController: MicroController;
-  updateSensor: Sensor;
-  updateSolenoid: Solenoid;
-  updateZone: Zone;
+  controllerHeartbeat: MicroController;
+  sensorReading: SensorReading;
 };
 
 
-export type MutationCreateMicroControllerArgs = {
-  createMicroControllerInput: CreateMicroControllerInput;
+export type MutationControllerHeartbeatArgs = {
+  controllerHeartbeatInput: ControllerHeartbeatInput;
 };
 
 
-export type MutationCreateSensorArgs = {
-  createSensorInput: CreateSensorInput;
-};
-
-
-export type MutationCreateSolenoidArgs = {
-  createSolenoidInput: CreateSolenoidInput;
-};
-
-
-export type MutationCreateZoneArgs = {
-  createZoneInput: CreateZoneInput;
-};
-
-
-export type MutationRemoveMicroControllerArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationRemoveSensorArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationRemoveSolenoidArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationRemoveZoneArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationUpdateMicroControllerArgs = {
-  updateMicroControllerInput: UpdateMicroControllerInput;
-};
-
-
-export type MutationUpdateSensorArgs = {
-  updateSensorInput: UpdateSensorInput;
-};
-
-
-export type MutationUpdateSolenoidArgs = {
-  updateSolenoidInput: UpdateSolenoidInput;
-};
-
-
-export type MutationUpdateZoneArgs = {
-  updateZoneInput: UpdateZoneInput;
+export type MutationSensorReadingArgs = {
+  sensorReadingInput: SensorReadingInput;
 };
 
 export type Query = {
   __typename?: 'Query';
-  microController: MicroController;
-  sensor: Sensor;
-  solenoid: Solenoid;
-  zone: Zone;
-};
-
-
-export type QueryMicroControllerArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type QuerySensorArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type QuerySolenoidArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type QueryZoneArgs = {
-  id: Scalars['Int'];
+  zone: Array<Zone>;
 };
 
 export type Sensor = {
   __typename?: 'Sensor';
-  /** Example field (placeholder) */
-  exampleField: Scalars['Int'];
+  /** Sensor ID */
+  id: Scalars['ID'];
+  readings?: Maybe<Array<SensorReading>>;
+  /** The type of sensor */
+  type: SensorType;
+  /** Zone ID for which this sensor resides */
+  zoneId: Scalars['ID'];
 };
+
+
+export type SensorReadingsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  take: Scalars['Int'];
+};
+
+export type SensorReading = {
+  __typename?: 'SensorReading';
+  /** When this reading was created */
+  createdAt: Scalars['DateTime'];
+  /** Sensor Reading ID */
+  id: Scalars['ID'];
+  /** The actual sensor reading */
+  reading: Scalars['Float'];
+  /** The ID of the sensor from which this reading came */
+  sensorId: Scalars['ID'];
+};
+
+export type SensorReadingInput = {
+  reading: Scalars['Int'];
+  sensorId: Scalars['ID'];
+};
+
+export enum SensorType {
+  Moisture = 'moisture'
+}
 
 export type Solenoid = {
   __typename?: 'Solenoid';
-  /** Example field (placeholder) */
-  exampleField: Scalars['Int'];
+  /** ID of the Solenoid */
+  id: Scalars['ID'];
+  /** Solenoid state */
+  state: SolenoidState;
+  /** Zone ID for which this solenoid resides */
+  zoneId: Scalars['ID'];
 };
 
-export type UpdateMicroControllerInput = {
-  /** Example field (placeholder) */
-  exampleField?: InputMaybe<Scalars['Int']>;
-  id: Scalars['Int'];
-};
-
-export type UpdateSensorInput = {
-  /** Example field (placeholder) */
-  exampleField?: InputMaybe<Scalars['Int']>;
-  id: Scalars['Int'];
-};
-
-export type UpdateSolenoidInput = {
-  /** Example field (placeholder) */
-  exampleField?: InputMaybe<Scalars['Int']>;
-  id: Scalars['Int'];
-};
-
-export type UpdateZoneInput = {
-  /** Example field (placeholder) */
-  exampleField?: InputMaybe<Scalars['Int']>;
-  id: Scalars['Int'];
-};
+export enum SolenoidState {
+  ForcedOff = 'forced_off',
+  ForcedOn = 'forced_on',
+  Off = 'off',
+  On = 'on'
+}
 
 export type Zone = {
   __typename?: 'Zone';
-  /** Example field (placeholder) */
-  exampleField: Scalars['Int'];
+  controller: MicroController;
+  /** Controller ID for which this zone is controlled by */
+  controllerId: Scalars['ID'];
+  /** Zone ID */
+  id: Scalars['ID'];
+  sensors: Array<Sensor>;
+  solenoids: Array<Solenoid>;
 };
