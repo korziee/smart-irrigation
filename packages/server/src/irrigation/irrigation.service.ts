@@ -69,7 +69,7 @@ export class IrrigationService {
     // ask zone service to turn off all solenoids in zone
     await Promise.all(
       expiredActiveJobs.map(async (ej) =>
-        this.zoneService.updateAllSolenoidsInZone(ej.zoneId, 'off'),
+        this.zoneService.updateAllSolenoidsInZone(ej.zoneId, false),
       ),
     );
 
@@ -132,7 +132,7 @@ export class IrrigationService {
         if (['dry', 'dryish'].includes(zoneMoistureLevel)) {
           this.logger.log(`Starting irrigation in zone with id: ${zone.id}`);
 
-          await this.zoneService.updateAllSolenoidsInZone(zone.id, 'on');
+          await this.zoneService.updateAllSolenoidsInZone(zone.id, true);
           await this.repository.createManyJobs([
             {
               zoneId: zone.id,

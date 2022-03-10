@@ -115,11 +115,11 @@ describe('IrrigationService', () => {
       // zone 4 is still moist in this test
       expect(zoneService.updateAllSolenoidsInZone).not.toHaveBeenCalledWith(
         '4',
-        'on',
+        true,
       );
       expect(zoneService.updateAllSolenoidsInZone).toHaveBeenCalledWith(
         '3',
-        'on',
+        true,
       );
       expect(irrigationRepository.createManyJobs).toHaveBeenCalledWith([
         {
@@ -166,12 +166,12 @@ describe('IrrigationService', () => {
 
       expect(zoneService.updateAllSolenoidsInZone).toHaveBeenCalledWith(
         'zone-1',
-        'off',
+        false,
       );
 
       expect(zoneService.updateAllSolenoidsInZone).toHaveBeenCalledWith(
         'zone-2',
-        'off',
+        false,
       );
     });
 

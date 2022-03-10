@@ -1,6 +1,9 @@
 {
-  "main": "graph.tsx",
+  "main": "lib/src/graph.js",
   "name": "@smart-irrigation/types",
   "packageManager": "yarn@3.1.1",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "dependencies": {
+    "typescript": "^4.6.2"
+  }
 }

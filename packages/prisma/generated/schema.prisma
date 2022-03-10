@@ -11,7 +11,7 @@ datasource db {
 model config {
   id                             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   soil_sensor_update_interval_ms Int
-  created_at                     DateTime     @default(dbgenerated("'2022-03-07 10:47:38.174011'::timestamp without time zone")) @db.Timestamp(6)
+  created_at                     DateTime     @default(dbgenerated("'2022-03-10 20:49:35.319645'::timestamp without time zone")) @db.Timestamp(6)
   controller                     controller[]
 }
 
@@ -37,16 +37,17 @@ model sensor {
 model sensor_reading {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   sensor_id  String   @db.Uuid
-  created_at DateTime @default(dbgenerated("'2022-03-07 10:47:38.174011'::timestamp without time zone")) @db.Timestamp(6)
+  created_at DateTime @default(dbgenerated("'2022-03-10 20:49:35.319645'::timestamp without time zone")) @db.Timestamp(6)
   reading    Float
   sensor     sensor   @relation(fields: [sensor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model solenoid {
-  id      String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  zone_id String         @db.Uuid
-  state   solenoid_state @default(off)
-  zone    zone           @relation(fields: [zone_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id           String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  zone_id      String                @db.Uuid
+  open         Boolean               @default(false)
+  control_mode solenoid_control_mode @default(auto)
+  zone         zone                  @relation(fields: [zone_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model zone {
@@ -78,9 +79,7 @@ enum sensor_type {
   moisture
 }
 
-enum solenoid_state {
-  on
-  off
-  forced_on
-  forced_off
+enum solenoid_control_mode {
+  auto
+  manual
 }

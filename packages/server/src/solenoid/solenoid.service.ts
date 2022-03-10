@@ -8,9 +8,9 @@ export class SolenoidService {
 
   public async updateSolenoidState(
     solenoidId: string,
-    state: Solenoid['state'],
+    open: boolean,
   ): Promise<Solenoid> {
-    const solenoid = await this.repository.updateState(solenoidId, state);
+    const solenoid = await this.repository.updateState(solenoidId, open);
 
     return solenoid;
   }

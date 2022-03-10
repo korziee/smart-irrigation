@@ -31,7 +31,7 @@ export class ZoneService {
    */
   public async updateAllSolenoidsInZone(
     zoneId: string,
-    state: Solenoid['state'],
+    open: boolean,
   ): Promise<Solenoid[]> {
     const solenoids = await this.solenoidRepository.findMany({
       zoneId,
@@ -46,11 +46,11 @@ export class ZoneService {
           type: 'UPDATE_SOLENOID_STATE',
           data: {
             solenoidId: solenoid.id,
-            state,
+            open,
           },
         });
 
-        return this.solenoidService.updateSolenoidState(solenoid.id, state);
+        return this.solenoidService.updateSolenoidState(solenoid.id, open);
       }),
     );
 

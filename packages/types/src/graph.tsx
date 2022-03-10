@@ -64,7 +64,7 @@ export type MutationSensorReadingArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  zone: Array<Zone>;
+  zones: Array<Zone>;
 };
 
 export type Sensor = {
@@ -107,19 +107,19 @@ export enum SensorType {
 
 export type Solenoid = {
   __typename?: 'Solenoid';
+  /** Describes if the solenoid is being controller manually or automatic */
+  controlMode: SolenoidControlMode;
   /** ID of the Solenoid */
   id: Scalars['ID'];
-  /** Solenoid state */
-  state: SolenoidState;
+  /** Describes if the solenoid is open or closed or not */
+  open: Scalars['Boolean'];
   /** Zone ID for which this solenoid resides */
   zoneId: Scalars['ID'];
 };
 
-export enum SolenoidState {
-  ForcedOff = 'forced_off',
-  ForcedOn = 'forced_on',
-  Off = 'off',
-  On = 'on'
+export enum SolenoidControlMode {
+  Auto = 'auto',
+  Manual = 'manual'
 }
 
 export type Zone = {
@@ -129,6 +129,8 @@ export type Zone = {
   controllerId: Scalars['ID'];
   /** Zone ID */
   id: Scalars['ID'];
+  /** Friendly name of the zone */
+  name?: Maybe<Scalars['String']>;
   sensors: Array<Sensor>;
   solenoids: Array<Solenoid>;
 };

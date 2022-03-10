@@ -12,6 +12,7 @@ export class ZoneRepository {
 
     zone.id = dbRow.id;
     zone.controllerId = dbRow.controller_id;
+    zone.name = dbRow.name;
 
     return zone;
   }

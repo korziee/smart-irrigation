@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type {
-  Prisma,
-  solenoid as solenoid_db_type,
-} from '@smart-irrigation/prisma';
+import type { solenoid as solenoid_db_type } from '@smart-irrigation/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 import { Solenoid } from './entities/solenoid.entity';
 
@@ -14,7 +11,8 @@ export class SolenoidRepository {
     const solenoid = new Solenoid();
 
     solenoid.id = dbRow.id;
-    solenoid.state = dbRow.state;
+    solenoid.open = dbRow.open;
+    solenoid.controlMode = dbRow.control_mode;
     solenoid.zoneId = dbRow.zone_id;
 
     return solenoid;
@@ -30,14 +28,28 @@ export class SolenoidRepository {
     return results.map(this.mapDbRowToSolenoid);
   }
 
-  public async updateState(
+  public async updateControlMode(
     solenoidId: string,
-    state: Solenoid['state'],
+    controlMode: Solenoid['controlMode'],
   ): Promise<Solenoid> {
     const row = await this.prisma.solenoid.update({
       where: { id: solenoidId },
       data: {
-        state,
+        control_mode: controlMode,
+      },
+    });
+
+    return this.mapDbRowToSolenoid(row);
+  }
+
+  public async updateState(
+    solenoidId: string,
+    open: boolean,
+  ): Promise<Solenoid> {
+    const row = await this.prisma.solenoid.update({
+      where: { id: solenoidId },
+      data: {
+        open,
       },
     });
 

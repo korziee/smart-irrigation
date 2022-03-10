@@ -4,7 +4,7 @@
   "main": "src/main",
   "scripts": {
     "postinstall": "yarn workspace @smart-irrigation/prisma db:generate",
-    "codegen": "yarn graphql-codegen --watch",
+    "codegen": "yarn graphql-codegen && yarn workspace @smart-irrigation/types tsc",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

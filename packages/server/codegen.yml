@@ -1,6 +1,6 @@
 overwrite: true
 schema: 'generated/schema.graphql'
 generates:
-  ../types/graph.tsx:
+  ../types/src/graph.tsx:
     plugins:
       - 'typescript'

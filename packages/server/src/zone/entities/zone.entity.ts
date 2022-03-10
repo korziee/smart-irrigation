@@ -10,5 +10,9 @@ export class Zone {
   })
   controllerId: string;
 
-  zoneName?: string;
+  @Field({
+    description: 'Friendly name of the zone',
+    nullable: true,
+  })
+  name?: string;
 }

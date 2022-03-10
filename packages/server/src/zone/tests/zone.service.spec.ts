@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { solenoid_state } from '@smart-irrigation/prisma';
+import { solenoid_control_mode } from '@smart-irrigation/prisma';
 import { solenoidServiceMockFactory } from '../../solenoid/mocks/solenoid.service.mock';
 import { SolenoidService } from '../../solenoid/solenoid.service';
 import { MicroControllerService } from '../../micro-controller/micro-controller.service';
@@ -87,23 +87,25 @@ describe('ZoneService', () => {
         {
           id: 'solenoid-1',
           zoneId: 'zone-1',
-          state: solenoid_state.off,
+          open: false,
+          controlMode: solenoid_control_mode.auto,
         },
         {
           id: 'solenoid-2',
           zoneId: 'zone-1',
-          state: solenoid_state.off,
+          open: false,
+          controlMode: solenoid_control_mode.auto,
         },
       ];
 
       solenoidRepository.findMany.mockResolvedValue(solenoids);
 
       solenoidService.updateSolenoidState
-        .calledWith('solenoid-1', 'on')
+        .calledWith('solenoid-1', true)
         .mockResolvedValue(solenoids[0]);
 
       solenoidService.updateSolenoidState
-        .calledWith('solenoid-2', 'on')
+        .calledWith('solenoid-2', true)
         .mockResolvedValue(solenoids[1]);
 
       zoneRepository.findOne.calledWith('zone-1').mockResolvedValue({
@@ -118,13 +120,11 @@ describe('ZoneService', () => {
         } as any);
 
       expect(
-        await service.updateAllSolenoidsInZone('zone-1', 'on'),
+        await service.updateAllSolenoidsInZone('zone-1', true),
       ).toStrictEqual(solenoids);
 
       expect(solenoidRepository.findMany).toHaveBeenCalledWith({
-        where: {
-          zone_id: 'zone-1',
-        },
+        zoneId: 'zone-1',
       });
     });
 
@@ -133,12 +133,14 @@ describe('ZoneService', () => {
         {
           id: 'solenoid-1',
           zoneId: 'zone-1',
-          state: solenoid_state.off,
+          open: false,
+          controlMode: solenoid_control_mode.auto,
         },
         {
           id: 'solenoid-2',
           zoneId: 'zone-1',
-          state: solenoid_state.off,
+          open: false,
+          controlMode: solenoid_control_mode.auto,
         },
       ];
 
@@ -155,7 +157,11 @@ describe('ZoneService', () => {
 
       solenoidRepository.findMany.mockResolvedValue(solenoids);
 
-      await service.updateAllSolenoidsInZone('zone-1', 'off');
+      await service.updateAllSolenoidsInZone('zone-1', false);
+
+      expect(
+        microControllerService.sendControllerMessage,
+      ).toHaveBeenCalledTimes(2);
 
       for (const solenoid of solenoids) {
         expect(
@@ -163,7 +169,7 @@ describe('ZoneService', () => {
         ).toHaveBeenCalledWith('controller-1', {
           type: 'UPDATE_SOLENOID_STATE',
           data: {
-            state: 'off',
+            open: false,
             solenoidId: solenoid.id,
           },
         });

@@ -78,15 +78,16 @@ type Solenoid {
   """Zone ID for which this solenoid resides"""
   zoneId: ID!
 
-  """Solenoid state"""
-  state: SolenoidState!
+  """Describes if the solenoid is being controller manually or automatic"""
+  controlMode: SolenoidControlMode!
+
+  """Describes if the solenoid is open or closed or not"""
+  open: Boolean!
 }
 
-enum SolenoidState {
-  on
-  off
-  forced_on
-  forced_off
+enum SolenoidControlMode {
+  auto
+  manual
 }
 
 type Zone {
@@ -95,6 +96,9 @@ type Zone {
 
   """Controller ID for which this zone is controlled by"""
   controllerId: ID!
+
+  """Friendly name of the zone"""
+  name: String
   sensors: [Sensor!]!
   solenoids: [Solenoid!]!
   controller: MicroController!

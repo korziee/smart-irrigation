@@ -5,7 +5,7 @@ export const shorthands: ColumnDefinitions | undefined = undefined;
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.createType('sensor_type', ['moisture']);
-  pgm.createType('solenoid_state', ['on', 'off', 'forced_on', 'forced_off']);
+  pgm.createType('solenoid_control_mode', ['auto', 'manual']);
 
   pgm.createTable('config', {
     id: {
@@ -121,10 +121,15 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       references: 'zone',
       onDelete: 'CASCADE',
     },
-    state: {
-      type: 'solenoid_state',
+    open: {
+      type: 'boolean',
       notNull: true,
-      default: 'off',
+      default: false,
+    },
+    control_mode: {
+      type: 'solenoid_control_mode',
+      notNull: true,
+      default: 'auto',
     },
   });
 

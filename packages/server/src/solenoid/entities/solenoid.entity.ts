@@ -1,9 +1,9 @@
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
-import { solenoid_state } from '@smart-irrigation/prisma';
-import type { solenoid_state as SolenoidState } from '@smart-irrigation/prisma';
+import { solenoid_control_mode } from '@smart-irrigation/prisma';
+import type { solenoid_control_mode as SolenoidControlMode } from '@smart-irrigation/prisma';
 
-registerEnumType(solenoid_state, {
-  name: 'SolenoidState',
+registerEnumType(solenoid_control_mode, {
+  name: 'SolenoidControlMode',
 });
 
 @ObjectType()
@@ -14,6 +14,12 @@ export class Solenoid {
   @Field(() => ID, { description: 'Zone ID for which this solenoid resides' })
   zoneId: string;
 
-  @Field(() => solenoid_state, { description: 'Solenoid state' })
-  state: SolenoidState;
+  @Field(() => solenoid_control_mode, {
+    description:
+      'Describes if the solenoid is being controller manually or automatic',
+  })
+  controlMode: SolenoidControlMode;
+
+  @Field({ description: 'Describes if the solenoid is open or closed or not' })
+  open: boolean;
 }
