@@ -3734,6 +3734,8 @@ __metadata:
 "@smart-irrigation/types@1.0.0, @smart-irrigation/types@workspace:packages/types":
   version: 0.0.0-use.local
   resolution: "@smart-irrigation/types@workspace:packages/types"
+  dependencies:
+    typescript: ^4.6.2
   languageName: unknown
   linkType: soft
 
