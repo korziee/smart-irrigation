@@ -42,6 +42,23 @@ export class SolenoidRepository {
     return this.mapDbRowToSolenoid(row);
   }
 
+  public async update(
+    update: Partial<Solenoid> & Pick<Solenoid, 'id'>,
+  ): Promise<Solenoid> {
+    const row = await this.prisma.solenoid.update({
+      where: {
+        id: update.id,
+      },
+      data: {
+        zone_id: update.zoneId,
+        open: update.open,
+        control_mode: update.controlMode,
+      },
+    });
+
+    return this.mapDbRowToSolenoid(row);
+  }
+
   public async updateState(
     solenoidId: string,
     open: boolean,

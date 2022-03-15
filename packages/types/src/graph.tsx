@@ -50,6 +50,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   controllerHeartbeat: MicroController;
   sensorReading: SensorReading;
+  updateSolenoidState: Solenoid;
 };
 
 
@@ -60,6 +61,11 @@ export type MutationControllerHeartbeatArgs = {
 
 export type MutationSensorReadingArgs = {
   sensorReadingInput: SensorReadingInput;
+};
+
+
+export type MutationUpdateSolenoidStateArgs = {
+  updateSolenoidModeInput: UpdateSolenoidModeInput;
 };
 
 export type Query = {
@@ -121,6 +127,12 @@ export enum SolenoidControlMode {
   Auto = 'auto',
   Manual = 'manual'
 }
+
+export type UpdateSolenoidModeInput = {
+  id: Scalars['ID'];
+  mode: Scalars['String'];
+  zoneId: Scalars['ID'];
+};
 
 export type Zone = {
   __typename?: 'Zone';

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { MicroControllerService } from '../micro-controller/micro-controller.service';
 import { MicroController } from '../micro-controller/entities/micro-controller.entity';
 import { ZoneRepository } from './zone.repository';
-import { SolenoidService } from '../solenoid/solenoid.service';
 import { Solenoid } from '../solenoid/entities/solenoid.entity';
 import { Zone } from './entities/zone.entity';
 import { SensorReading } from '../sensor/entities/sensor-reading.entity';
@@ -15,7 +14,6 @@ export class ZoneService {
   constructor(
     private readonly repository: ZoneRepository,
     private readonly microControllerService: MicroControllerService,
-    private readonly solenoidService: SolenoidService,
     private readonly sensorRepository: SensorRepository,
     private readonly solenoidRepository: SolenoidRepository,
   ) {}
@@ -27,8 +25,32 @@ export class ZoneService {
   }
 
   /**
-   * Updates local and remote states for all solenoids in the zone
+   * Updates local and remote states for the solenoid
    */
+  public async updateSolenoid(
+    solenoidId: string,
+    zoneId: string,
+    mode: Solenoid['controlMode'],
+    open: boolean,
+  ): Promise<Solenoid> {
+    const controller = await this.getControllerForZone(zoneId);
+
+    // tell controller to update remote state
+    await this.microControllerService.sendControllerMessage(controller.id, {
+      type: 'UPDATE_SOLENOID_STATE',
+      data: {
+        solenoidId: solenoidId,
+        open,
+      },
+    });
+
+    return this.solenoidRepository.update({
+      id: solenoidId,
+      open,
+      controlMode: mode,
+    });
+  }
+
   public async updateAllSolenoidsInZone(
     zoneId: string,
     open: boolean,
@@ -39,18 +61,7 @@ export class ZoneService {
 
     const updatedSolenoids = await Promise.all(
       solenoids.map(async (solenoid) => {
-        const controller = await this.getControllerForZone(solenoid.zoneId);
-
-        // tell controller to update remote state
-        await this.microControllerService.sendControllerMessage(controller.id, {
-          type: 'UPDATE_SOLENOID_STATE',
-          data: {
-            solenoidId: solenoid.id,
-            open,
-          },
-        });
-
-        return this.solenoidService.updateSolenoidState(solenoid.id, open);
+        return this.updateSolenoid(solenoid.id, zoneId, 'auto', open);
       }),
     );
 

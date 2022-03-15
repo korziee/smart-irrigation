@@ -111,6 +111,7 @@ type Query {
 type Mutation {
   controllerHeartbeat(controllerHeartbeatInput: ControllerHeartbeatInput!): MicroController!
   sensorReading(sensorReadingInput: SensorReadingInput!): SensorReading!
+  updateSolenoidMode(updateSolenoidModeInput: UpdateSolenoidModeInput!): Solenoid!
 }
 
 input ControllerHeartbeatInput {
@@ -120,4 +121,11 @@ input ControllerHeartbeatInput {
 input SensorReadingInput {
   sensorId: ID!
   reading: Int!
+}
+
+input UpdateSolenoidModeInput {
+  id: ID!
+  zoneId: ID!
+  mode: SolenoidControlMode!
+  open: Boolean
 }

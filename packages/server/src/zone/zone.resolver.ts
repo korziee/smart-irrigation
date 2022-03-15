@@ -1,9 +1,17 @@
-import { Resolver, Query, ResolveField, Parent } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  ResolveField,
+  Parent,
+  Mutation,
+  Args,
+} from '@nestjs/graphql';
 import { ZoneService } from './zone.service';
 import { Zone } from './entities/zone.entity';
 import { Sensor } from '../sensor/entities/sensor.entity';
 import { Solenoid } from '../solenoid/entities/solenoid.entity';
 import { MicroController } from '../micro-controller/entities/micro-controller.entity';
+import { UpdateSolenoidModeInput } from './dto/update-solenoid.input';
 
 @Resolver(() => Zone)
 export class ZoneResolver {
@@ -27,5 +35,24 @@ export class ZoneResolver {
   @Query(() => [Zone], { name: 'zones' })
   findAll() {
     return this.zoneService.getAllZones();
+  }
+
+  @Mutation(() => Solenoid)
+  updateSolenoidMode(
+    @Args('updateSolenoidModeInput')
+    { id, zoneId, mode, open }: UpdateSolenoidModeInput,
+  ) {
+    if (mode === 'auto' && open) {
+      throw new Error(
+        'cannot specifiy open status for a solenoid being automatically controlled',
+      );
+    }
+    return this.zoneService.updateSolenoid(
+      id,
+      zoneId,
+      mode,
+      // reset state to off if mode is set to auto
+      mode === 'auto' ? false : open,
+    );
   }
 }

@@ -4,12 +4,15 @@ import {
   Solenoid as SolenoidType,
   Zone as ZoneType,
   Sensor as SensorType,
+  MicroController as ControllerType,
   SolenoidControlMode,
 } from "@smart-irrigation/types";
 
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
-import TrafficIcon from "@mui/icons-material/Traffic";
+import CalendarIcon from "@mui/icons-material/CalendarToday";
+import ComputerIcon from "@mui/icons-material/Computer";
 import SensorsIcon from "@mui/icons-material/Sensors";
+import ModeIcon from "@mui/icons-material/Mode";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import InvertColorsOffIcon from "@mui/icons-material/InvertColorsOff";
 
@@ -20,13 +23,18 @@ import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 import {
   Card,
   CardContent,
-  CardHeader,
-  Divider,
   ButtonTypeMap,
+  Chip,
+  TableContainer,
+  Table,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableBody,
 } from "@mui/material";
 import { Box } from "@mui/system";
 
@@ -36,6 +44,7 @@ const ZONE_QUERY = gql`
       id
       name
       controller {
+        id
         name
         ipAddress
         online
@@ -62,7 +71,18 @@ const ZONE_QUERY = gql`
   }
 `;
 
-const CustomPaper = styled(Paper)(({ theme }) => ({
+const UPDATE_SOLENOID_STATE = gql`
+  mutation UpdateSolenoidState($input: UpdateSolenoidModeInput!) {
+    updateSolenoidMode(updateSolenoidModeInput: $input) {
+      id
+      zoneId
+      controlMode
+      open
+    }
+  }
+`;
+
+const CentreView = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#FFF",
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -145,28 +165,41 @@ const SolenoidControlModeChanger: React.FC<{
  */
 
 const Solenoid: React.FC<{ solenoid: SolenoidType }> = ({ solenoid }) => {
+  const [mutateFunction] = useMutation(UPDATE_SOLENOID_STATE);
+
   const SolenoidIcon = solenoid.open ? InvertColorsIcon : InvertColorsOffIcon;
 
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <CentredText>
-          <FingerprintIcon sx={{ marginRight: "2px" }} />
+          <FingerprintIcon sx={{ marginRight: 1 }} />
           <Typography>{solenoid.id}</Typography>
         </CentredText>
       </Grid>
       <Grid item xs={12}>
         <CentredText>
-          <SolenoidIcon sx={{ marginRight: "2px" }} />
+          <SolenoidIcon sx={{ marginRight: 1 }} />
           <Typography>{solenoid.open ? "Open" : "Closed"}</Typography>
         </CentredText>
       </Grid>
       <Grid item xs={12}>
-        <Typography>State Changer</Typography>
+        <Typography>Control Mode</Typography>
         <SolenoidControlModeChanger
           mode={solenoid.controlMode}
           open={solenoid.open}
-          onChange={console.log}
+          onChange={(mode, open) => {
+            mutateFunction({
+              variables: {
+                input: {
+                  id: solenoid.id,
+                  zoneId: solenoid.zoneId,
+                  mode: mode,
+                  open,
+                },
+              },
+            });
+          }}
         />
       </Grid>
     </Grid>
@@ -178,15 +211,91 @@ const Sensor: React.FC<{ sensor: SensorType }> = ({ sensor }) => {
     <Grid container spacing={1}>
       <Grid item xs={12}>
         <CentredText>
-          <FingerprintIcon sx={{ marginRight: "2px" }} />
+          <FingerprintIcon sx={{ marginRight: 1 }} />
           <Typography>{sensor.id}</Typography>
         </CentredText>
       </Grid>
       <Grid item xs={12}>
         <CentredText>
-          <SensorsIcon sx={{ marginRight: "2px" }} />
+          <SensorsIcon sx={{ marginRight: 1 }} />
           <Typography>{sensor.type}</Typography>
         </CentredText>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography>Readings</Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Amount</TableCell>
+                <TableCell>Timestamp</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sensor.readings?.map(({ reading, createdAt, id }) => (
+                <TableRow key={id}>
+                  <TableCell>{reading}</TableCell>
+                  <TableCell>{createdAt}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Grid>
+    </Grid>
+  );
+};
+
+const Controller: React.FC<{ controller: ControllerType }> = ({
+  controller: { id, online, name, ipAddress, lastBoot },
+}) => {
+  return (
+    <Grid container spacing={1}>
+      <Grid item xs={12}>
+        <CentredText>
+          <FingerprintIcon sx={{ marginRight: 1 }} />
+          <Typography>{id}</Typography>
+        </CentredText>
+      </Grid>
+      <Grid item xs={12}>
+        <CentredText>
+          <ModeIcon sx={{ marginRight: 1 }} />
+          <Typography>{name}</Typography>
+        </CentredText>
+      </Grid>
+      {ipAddress && (
+        <Grid item xs={12}>
+          <CentredText>
+            <ComputerIcon sx={{ marginRight: 1 }} />
+            <Typography>{ipAddress}</Typography>
+          </CentredText>
+        </Grid>
+      )}
+      {lastBoot && (
+        <Grid item xs={12}>
+          <CentredText>
+            <CalendarIcon sx={{ marginRight: 1 }} />
+            <Typography>Last Boot: {lastBoot}</Typography>
+          </CentredText>
+        </Grid>
+      )}
+      <Grid container item xs={12} spacing={1}>
+        <Grid item>
+          <Chip
+            label={online ? "Online" : "Offline"}
+            color={online ? "success" : "error"}
+          />
+        </Grid>
+        {!ipAddress && (
+          <Grid item>
+            <Chip label={"No IP Address"} color={"error"} />
+          </Grid>
+        )}
+        {!lastBoot && (
+          <Grid item>
+            <Chip label={"Never Booted"} color={"info"} />
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );
@@ -194,47 +303,75 @@ const Sensor: React.FC<{ sensor: SensorType }> = ({ sensor }) => {
 
 const Zone: React.FC<{ zone: ZoneType }> = ({ zone }) => {
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h4" sx={{ marginBottom: 1 }}>
-          {zone.name}
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} container spacing={1}>
+    <Box>
+      <Typography variant="h4" sx={{ marginBottom: 1 }}>
+        {zone.name}
+      </Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <Typography variant="h6">Controller</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Card>
+                <CardContent>
+                  <Controller controller={zone.controller} />
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Grid container spacing={1}>
             <Grid item xs={12}>
               <Typography variant="h6">Solenoids</Typography>
             </Grid>
             {zone.solenoids.map((solenoid) => (
-              <Grid item xs={12}>
-                <Solenoid key={solenoid.id} solenoid={solenoid} />
-              </Grid>
-            ))}
-          </Grid>
-          <Grid item xs={12} container spacing={1}>
-            <Grid item xs={12}>
-              <Typography variant="h6">Sensors</Typography>
-            </Grid>
-            {zone.sensors.map((sensor, i) => (
-              <Grid item xs={12}>
-                <Sensor key={sensor.id} sensor={sensor} />
+              <Grid item xs={12} key={solenoid.id}>
+                <Card>
+                  <CardContent>
+                    <Solenoid solenoid={solenoid} />
+                  </CardContent>
+                </Card>
               </Grid>
             ))}
           </Grid>
         </Grid>
-      </CardContent>
-    </Card>
+
+        <Grid item xs={12}>
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <Typography variant="h6">Sensors</Typography>
+            </Grid>
+            {zone.sensors.map((sensor) => (
+              <Grid item xs={12} key={sensor.id}>
+                <Card>
+                  <CardContent>
+                    <Sensor sensor={sensor} />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
 function App() {
-  const { loading, error, data } = useQuery<{ zones: ZoneType[] }>(ZONE_QUERY);
+  const { loading, error, data, networkStatus } =
+    useQuery<{ zones: ZoneType[] }>(ZONE_QUERY);
+  console.log("STAT", networkStatus);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
   return (
     <Wrapper>
-      <CustomPaper>
+      <CentreView>
         <Grid container spacing={2}>
           {data?.zones.map((zone) => (
             <Grid key={zone.id} item xs={12}>
@@ -242,7 +379,7 @@ function App() {
             </Grid>
           ))}
         </Grid>
-      </CustomPaper>
+      </CentreView>
     </Wrapper>
   );
 }
