@@ -20,7 +20,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     created_at: {
       type: 'timestamp',
       notNull: true,
-      default: 'now',
+      default: pgm.func('now()'),
     },
   });
 
@@ -101,7 +101,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     created_at: {
       type: 'timestamp',
       notNull: true,
-      default: 'now',
+      default: pgm.func('now()'),
     },
     reading: {
       type: 'double precision',

@@ -15,6 +15,9 @@ export class SensorService {
       where: {
         sensor_id: sensorId,
       },
+      orderBy: {
+        created_at: 'desc',
+      },
       take: pagination.take,
       skip: pagination.skip,
     });

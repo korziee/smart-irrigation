@@ -8,6 +8,8 @@ import {
   SolenoidControlMode,
 } from "@smart-irrigation/types";
 
+import { format, parseISO } from "date-fns";
+
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import CalendarIcon from "@mui/icons-material/CalendarToday";
 import ComputerIcon from "@mui/icons-material/Computer";
@@ -235,7 +237,9 @@ const Sensor: React.FC<{ sensor: SensorType }> = ({ sensor }) => {
               {sensor.readings?.map(({ reading, createdAt, id }) => (
                 <TableRow key={id}>
                   <TableCell>{reading}</TableCell>
-                  <TableCell>{createdAt}</TableCell>
+                  <TableCell>
+                    {format(parseISO(createdAt), "h:mm:ss aaa	(dd-MM-yyyy)")}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
