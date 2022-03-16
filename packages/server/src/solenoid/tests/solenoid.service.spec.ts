@@ -27,23 +27,4 @@ describe('SolenoidService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-  describe('updateSolenoidState', () => {
-    it('should update the database and return the updated solenoid', async () => {
-      const solenoid: Solenoid = {
-        id: 'solenoid-2',
-        zoneId: 'zone-1',
-        open: true,
-        controlMode: solenoid_control_mode.auto,
-      };
-
-      solenoidRepository.updateState
-        .calledWith('solenoid-2', true)
-        .mockResolvedValue(solenoid);
-
-      expect(
-        await service.updateSolenoidState('solenoid-2', true),
-      ).toStrictEqual(solenoid);
-    });
-  });
 });

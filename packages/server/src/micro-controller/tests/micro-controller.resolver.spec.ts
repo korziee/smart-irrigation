@@ -12,6 +12,7 @@ describe('MicroControllerResolver', () => {
     typeof microControllerServiceMockFactory
   >;
   let configService: ReturnType<typeof configServiceMockFactory>;
+  let mockContext: any;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,6 +29,13 @@ describe('MicroControllerResolver', () => {
     resolver = module.get<MicroControllerResolver>(MicroControllerResolver);
     microControllerService = module.get(MicroControllerService);
     configService = module.get(ConfigService);
+    mockContext = {
+      req: {
+        socket: {
+          remoteAddress: '1.1.1.1',
+        },
+      },
+    };
   });
 
   it('should be defined', () => {
@@ -35,22 +43,25 @@ describe('MicroControllerResolver', () => {
   });
 
   describe('controllerHeartbeat', () => {
-    it('should call microControllerService.handleControllerOnlineHook with the correct controller ID', async () => {
-      await resolver.controllerHeartbeat({ id: 'controller-1' });
+    it('should call microControllerService.handleControllerHeartbeat with the correct controller ID', async () => {
+      await resolver.controllerHeartbeat({ id: 'controller-1' }, mockContext);
 
       expect(
-        microControllerService.handleControllerOnlineHook,
-      ).toHaveBeenCalledWith('controller-1');
+        microControllerService.handleControllerHeartbeat,
+      ).toHaveBeenCalledWith('controller-1', '1.1.1.1');
     });
 
-    it('should return the controller from microControllerService.handleControllerOnlineHook', async () => {
-      microControllerService.handleControllerOnlineHook.mockResolvedValue({
+    it('should return the controller from microControllerService.handleControllerHeartbeat', async () => {
+      microControllerService.handleControllerHeartbeat.mockResolvedValue({
         id: 'controller-1',
       } as any);
 
-      const controller = await resolver.controllerHeartbeat({
-        id: 'controller-1',
-      });
+      const controller = await resolver.controllerHeartbeat(
+        {
+          id: 'controller-1',
+        },
+        mockContext,
+      );
 
       expect(controller).toStrictEqual({ id: 'controller-1' });
     });

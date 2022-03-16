@@ -7,8 +7,9 @@ import { MicroControllerModule } from './micro-controller/micro-controller.modul
 import { SensorModule } from './sensor/sensor.module';
 import { SolenoidModule } from './solenoid/solenoid.module';
 import { ZoneModule } from './zone/zone.module';
-import { ConfigModule } from './config/config.module';
+import { ConfigModule as SmartIrrigationConfigModule } from './config/config.module';
 import { IrrigationModule } from './irrigation/irrigation.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,12 +17,15 @@ import { IrrigationModule } from './irrigation/irrigation.module';
       autoSchemaFile: join(process.cwd(), 'generated/schema.graphql'),
       sortSchema: false,
     }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     PrismaModule,
     MicroControllerModule,
     SensorModule,
     SolenoidModule,
     ZoneModule,
-    ConfigModule,
+    SmartIrrigationConfigModule,
     IrrigationModule,
   ],
   controllers: [],

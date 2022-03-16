@@ -37,12 +37,16 @@ describe('MicroControllerService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('handleControllerOnlineHook', () => {
+  describe('handleControllerHeartbeat', () => {
     it('should update the online status of a micro controller', async () => {
-      await service.handleControllerOnlineHook('controller-1');
+      const now = new Date();
+      jest.useFakeTimers().setSystemTime(now.getTime());
+      await service.handleControllerHeartbeat('controller-1', '1.1.1.');
 
       expect(repository.update).toHaveBeenCalledWith('controller-1', {
         online: true,
+        ip_address: '1.1.1.',
+        last_boot: now,
       });
     });
 
@@ -54,8 +58,9 @@ describe('MicroControllerService', () => {
           online: true,
         } as unknown as MicroController);
 
-      const controller = await service.handleControllerOnlineHook(
+      const controller = await service.handleControllerHeartbeat(
         'controller-1',
+        '1.1.1.',
       );
 
       expect(controller).toStrictEqual({ id: 'controller-1', online: true });

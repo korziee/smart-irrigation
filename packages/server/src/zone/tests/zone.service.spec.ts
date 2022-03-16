@@ -100,13 +100,11 @@ describe('ZoneService', () => {
 
       solenoidRepository.findMany.mockResolvedValue(solenoids);
 
-      solenoidService.updateSolenoidState
-        .calledWith('solenoid-1', true)
-        .mockResolvedValue(solenoids[0]);
+      solenoidRepository.update
+        .mockResolvedValueOnce(solenoids[0])
+        .mockResolvedValueOnce(solenoids[1]);
 
-      solenoidService.updateSolenoidState
-        .calledWith('solenoid-2', true)
-        .mockResolvedValue(solenoids[1]);
+      solenoidRepository.update;
 
       zoneRepository.findOne.calledWith('zone-1').mockResolvedValue({
         id: 'zone-1',
@@ -123,6 +121,16 @@ describe('ZoneService', () => {
         await service.updateAllSolenoidsInZone('zone-1', true),
       ).toStrictEqual(solenoids);
 
+      expect(solenoidRepository.update).toHaveBeenCalledWith({
+        id: 'solenoid-1',
+        open: true,
+        controlMode: 'auto',
+      });
+      expect(solenoidRepository.update).toHaveBeenCalledWith({
+        id: 'solenoid-2',
+        open: true,
+        controlMode: 'auto',
+      });
       expect(solenoidRepository.findMany).toHaveBeenCalledWith({
         zoneId: 'zone-1',
       });

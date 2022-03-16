@@ -4,6 +4,7 @@ import {
   Args,
   ResolveField,
   Parent,
+  Context,
 } from '@nestjs/graphql';
 import { MicroControllerService } from './micro-controller.service';
 import { MicroController } from './entities/micro-controller.entity';
@@ -30,9 +31,11 @@ export class MicroControllerResolver {
   controllerHeartbeat(
     @Args('controllerHeartbeatInput')
     controllerHeartbeatInput: ControllerHeartbeatInput,
+    @Context() context,
   ) {
-    return this.microControllerService.handleControllerOnlineHook(
+    return this.microControllerService.handleControllerHeartbeat(
       controllerHeartbeatInput.id,
+      context.req.socket.remoteAddress as string,
     );
   }
 }

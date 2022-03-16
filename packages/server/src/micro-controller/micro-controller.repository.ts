@@ -42,4 +42,20 @@ export class MicroControllerRepository {
 
     return this.mapDbRowToConfig(controller);
   }
+
+  public async findMany(query?: {
+    lastBoot?: {
+      lte?: Date;
+    };
+  }): Promise<MicroController[]> {
+    const controllers = await this.prisma.controller.findMany({
+      where: {
+        last_boot: {
+          lte: query?.lastBoot?.lte,
+        },
+      },
+    });
+
+    return controllers.map(this.mapDbRowToConfig);
+  }
 }

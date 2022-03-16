@@ -49,7 +49,10 @@ export class IrrigationService {
       this.logger.error('There was an error with the smart irrigation loop', e);
     }
 
-    setTimeout(() => this.startSmartIrrigation(), this.jobIntervalMs);
+    this.jobTimerId = setTimeout(
+      () => this.startSmartIrrigation(),
+      this.jobIntervalMs,
+    );
   }
 
   public stopSmartIrrigation() {
