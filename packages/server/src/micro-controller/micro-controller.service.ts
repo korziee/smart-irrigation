@@ -58,8 +58,14 @@ export class MicroControllerService {
     controllerId: string,
     message: Message,
   ): Promise<void> {
-    console.log('here');
     const controller = await this.repository.findById(controllerId);
+
+    if (this.config.get('ENV') === 'LOCAL') {
+      this.logger.log(
+        "Skipping HTTP request to controller as we're running in a local environment",
+      );
+      return;
+    }
 
     if (!controller.ipAddress) {
       throw new Error(
@@ -68,13 +74,6 @@ export class MicroControllerService {
     }
 
     const route = this.messageTypeRouteMap[message.type];
-
-    if (this.config.get('ENV') === 'LOCAL') {
-      this.logger.log(
-        "Skipping HTTP request to controller as we're running in a local environment",
-      );
-      return;
-    }
 
     const res = await lastValueFrom(
       this.httpService.post(
