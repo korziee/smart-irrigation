@@ -366,8 +366,9 @@ const Zone: React.FC<{ zone: ZoneType }> = ({ zone }) => {
 };
 
 function App() {
-  const { loading, error, data, networkStatus } =
-    useQuery<{ zones: ZoneType[] }>(ZONE_QUERY);
+  const { loading, error, data, networkStatus } = useQuery<{
+    zones: ZoneType[];
+  }>(ZONE_QUERY, { pollInterval: 2000 });
   console.log("STAT", networkStatus);
 
   if (loading) return <p>Loading...</p>;
