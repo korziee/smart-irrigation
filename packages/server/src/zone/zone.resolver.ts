@@ -44,7 +44,7 @@ export class ZoneResolver {
   ) {
     if (mode === 'auto' && open) {
       throw new Error(
-        'cannot specifiy open status for a solenoid being automatically controlled',
+        'cannot specify open status for a solenoid being automatically controlled',
       );
     }
     return this.zoneService.updateSolenoid(

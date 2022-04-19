@@ -50,7 +50,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   controllerHeartbeat: MicroController;
   sensorReading: SensorReading;
-  updateSolenoidState: Solenoid;
+  updateSolenoidMode: Solenoid;
 };
 
 
@@ -64,7 +64,7 @@ export type MutationSensorReadingArgs = {
 };
 
 
-export type MutationUpdateSolenoidStateArgs = {
+export type MutationUpdateSolenoidModeArgs = {
   updateSolenoidModeInput: UpdateSolenoidModeInput;
 };
 
@@ -130,7 +130,8 @@ export enum SolenoidControlMode {
 
 export type UpdateSolenoidModeInput = {
   id: Scalars['ID'];
-  mode: Scalars['String'];
+  mode: SolenoidControlMode;
+  open?: InputMaybe<Scalars['Boolean']>;
   zoneId: Scalars['ID'];
 };
 
