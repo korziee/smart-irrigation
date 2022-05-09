@@ -1,10 +1,13 @@
 local variables = require("variables")
 local shared = require("shared")
 
--- TODO: verify that this is the correct bus ID.
 local BUS_ID = 0
+local OP_READ_MOISTURE_SENSOR = 0x05
 
--- initialize i2c
+local OP_LED_OFF = 0x00
+local OP_LED_ON = 0x01
+
+print("initialising i2c on BUS " .. BUS_ID)
 i2c.setup(BUS_ID, variables.I2C_SDA, variables.I2C_SCL, i2c.FAST)
 
 local function send_sensor_value_to_server(sensor_id, value)
@@ -25,41 +28,87 @@ local function send_sensor_value_to_server(sensor_id, value)
     function(code, data)
       if (code < 0) then
         print("HTTP request failed")
-        callback(nil)
       else
-        print(code, data)
+        -- NOTE: uncomment this line for debugging.
+        -- print(code, data)
       end
     end
   )
 end
 
-local function get_sensor_value(sensor_id)
+local function write_to_device(device_address, command)
   i2c.start(BUS_ID)
 
-  local sensor_address = variables.SENSOR_IDS[sensor_id]
-  local ack = i2c.address(BUS_ID, sensor_address, i2c.RECEIVER)
+  local writeAcknowledgement = i2c.address(BUS_ID, device_address, i2c.TRANSMITTER)
 
-  if not ack then
-    print("No I2C acknowledge received for BUS_ID = " .. BUS_ID .. " and sensor address = " .. sensor_address)
+  if not writeAcknowledgement then
+    print("No write I2C acknowledge received for sensor address = " .. device_address)
     return nil
   end
-  -- Read data for variable number of bytes.
-  -- TODO: verify that 1 byte is enough?
+
+  i2c.write(BUS_ID, command)
+  i2c.stop(BUS_ID)
+
+  return true
+end
+
+local function read_from_device(device_address)
+  -- Instructs the ATTINY85 to take a sensor reading.
+  if not write_to_device(device_address, OP_READ_MOISTURE_SENSOR) then
+    -- If unable to acknowledge, return early.
+    return nil
+  end
+
+  i2c.start(BUS_ID)
+
+  local readAcknowledgement = i2c.address(BUS_ID, device_address, i2c.RECEIVER)
+
+  if not readAcknowledgement then
+    print("No read I2C acknowledge received for sensor address = " .. device_address)
+    return nil
+  end
+
+  -- Read data, we only need to read the first byte because sensor only
+  -- calcultes moisture between 0-255
   local data = i2c.read(BUS_ID, 1)
   i2c.stop(BUS_ID)
 
-  return data
+  return string.byte(data)
+end
+
+-- Returns a 0-255 OR nil value depending on the moisture level of the soil
+-- or if there was an error with the i2c bus.
+local function get_sensor_value(sensor_id)
+  local sensor_address = variables.SENSOR_IDS[sensor_id]
+
+  -- turn LED on
+  write_to_device(sensor_address, OP_LED_ON)
+
+  -- read value
+  local value = read_from_device(sensor_address)
+
+  -- turn LED off
+  write_to_device(sensor_address, OP_LED_OFF)
+
+  return value
 end
 
 local function start_watching_sensors(interval)
-  -- TODO: setup timer
-  -- TODO: setup loop for all sensors
-  -- Arrays start at 1 in Lua
-  local value = get_sensor_value("09a51cc0-a543-41f2-af84-75324bb5d887")
-  print("Value", value)
-  -- TODO: replace "20" with the actual value here
-  send_sensor_value_to_server("09a51cc0-a543-41f2-af84-75324bb5d887", 20)
-  -- TODO: verify that output is integer, if not convert to integer
+  mytimer = tmr.create()
+
+  mytimer:register(
+    interval,
+    tmr.ALARM_AUTO,
+    function()
+      for sensor_id in pairs(variables.SENSOR_IDS) do
+        local sensor_value = get_sensor_value(sensor_id)
+        print("SENSOR VALUE", sensor_value)
+        send_sensor_value_to_server(sensor_id, sensor_value)
+      end
+    end
+  )
+
+  mytimer:start()
 end
 
 return {

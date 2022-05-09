@@ -29,6 +29,9 @@ export class SensorResolver {
     @Args('sensorReadingInput')
     sensorReadingInput: SensorReadingInput,
   ) {
+    if (sensorReadingInput.reading < 0 || sensorReadingInput.reading > 255) {
+      throw new Error('Sensor reading must be between 0-255 inclusive.');
+    }
     return this.sensorService.createReading(
       sensorReadingInput.sensorId,
       sensorReadingInput.reading,

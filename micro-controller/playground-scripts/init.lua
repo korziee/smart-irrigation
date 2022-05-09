@@ -1,5 +1,5 @@
 -- load credentials, 'SSID' and 'PASSWORD' declared and initialize in there
-local credentials = require("credentials")
+local credentials = require("variables")
 
 function startup()
   if file.open("init.lua") == nil then
