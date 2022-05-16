@@ -1,5 +1,5 @@
--- load credentials, 'SSID' and 'PASSWORD' declared and initialize in there
-local credentials = require("variables")
+-- load variables, 'SSID' and 'PASSWORD' declared and initialize in there
+local variables = require("variables")
 
 function startup()
   if file.open("init.lua") == nil then
@@ -26,7 +26,6 @@ wifi_got_ip_event = function(T)
   -- Internet connectivity can be determined with net.dns.resolve().
   print("Wifi connection is ready! IP address is: " .. T.IP)
   print("Startup will resume momentarily, you have 3 seconds to abort.")
-  print("Waiting...")
   tmr.create():alarm(3000, tmr.ALARM_SINGLE, startup)
 end
 
@@ -69,6 +68,6 @@ wifi.eventmon.register(wifi.eventmon.STA_DISCONNECTED, wifi_disconnect_event)
 
 print("Connecting to WiFi access point...")
 wifi.setmode(wifi.STATION)
-wifi.sta.config({ssid = credentials.SSID, pwd = credentials.PASSWORD})
+wifi.sta.config({ssid = variables.SSID, pwd = variables.PASSWORD})
 wifi.sta.sleeptype(wifi.MODEM_SLEEP)
 -- wifi.sta.connect() not necessary because config() uses auto-connect=true by default

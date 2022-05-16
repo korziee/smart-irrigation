@@ -7,9 +7,6 @@ local OP_READ_MOISTURE_SENSOR = 0x05
 local OP_LED_OFF = 0x00
 local OP_LED_ON = 0x01
 
-print("initialising i2c on BUS " .. BUS_ID)
-i2c.setup(BUS_ID, variables.I2C_SDA, variables.I2C_SCL, i2c.FAST)
-
 local function send_sensor_value_to_server(sensor_id, value)
   local body = {
     query = "mutation CreateSensorReading($input: SensorReadingInput!) {  sensorReading(sensorReadingInput: $input) {    id  }}",
@@ -30,7 +27,7 @@ local function send_sensor_value_to_server(sensor_id, value)
         print("HTTP request failed")
       else
         -- NOTE: uncomment this line for debugging.
-        -- print(code, data)
+        print("HTTP Request Succeeded")
       end
     end
   )

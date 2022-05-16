@@ -1,5 +1,5 @@
 {
-  "port": "/dev/tty.SLAB_USBtoUART",
+  "port": "/dev/tty.usbserial-14410",
   "connectionDelay": 300,
   "minify": false,
   "compile": false,

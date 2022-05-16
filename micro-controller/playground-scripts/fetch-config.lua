@@ -12,7 +12,7 @@ local shared = require("shared")
 --   }
 -- }
 
-local function fetch_config(controller_id, callback)
+return function(controller_id, callback)
   local mutation =
     '{"query":"mutation {controllerHeartbeat(controllerHeartbeatInput: { id: \\"' ..
     controller_id .. '\\"}) {  config {    id, soilSensorUpdateIntervalMs  }}}","variables":{}}'
@@ -33,7 +33,3 @@ local function fetch_config(controller_id, callback)
     end
   )
 end
-
-return {
-  fetch_config = fetch_config
-}
