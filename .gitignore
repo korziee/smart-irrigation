@@ -15,3 +15,4 @@ node_modules
 packages/**/lib
 
 .env
+micro-controller/playground-scripts/LFS_float_smart_irrigation.img

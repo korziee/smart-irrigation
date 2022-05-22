@@ -1,3 +1,5 @@
+local solenoid_service = require("solenoid-service")
+
 local handlers
 
 do
@@ -32,10 +34,19 @@ do
     )
   end
 
+  local function solenoid_state_change_handler(request_data)
+    -- { solenoidId: string, open: boolean }
+    local json = sjson.decode(request_data)
+
+    -- TODO: test if this works
+    solenoid_service.handle_remote_solenoid_instruction(json.solenoidId, json.open)
+  end
+
   handlers = {
     default = default_handler,
     test = test_handler,
-    post = make_post
+    post = make_post,
+    solenoid_state_change_handler = solenoid_state_change_handler
   }
 end
 

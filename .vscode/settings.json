@@ -7,5 +7,5 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "eslint.nodePath": ".yarn/sdks",
   "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
-  "Lua.diagnostics.globals": ["i2c", "gpio"]
+  "Lua.diagnostics.globals": ["i2c", "gpio", "bit", "sjson"]
 }

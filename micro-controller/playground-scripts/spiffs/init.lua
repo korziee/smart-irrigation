@@ -4,12 +4,29 @@ local variables = require("variables")
 function startup()
   if file.open("init.lua") == nil then
     print("init.lua deleted or renamed")
-  else
-    print("Running main.lua")
-    dofile("main.lua")
-
-    file.close("init.lua")
+    return
   end
+
+  -- LFS not yet configured, load image
+  if #node.LFS.list() == 0 and file.open(variables.LUA_IMAGE_NAME) then
+    print("LFS not yet configured, reloading")
+    file.close(variables.LUA_IMAGE_NAME)
+    node.LFS.reload(variables.LUA_IMAGE_NAME)
+    return
+  end
+
+  node.LFS.init_lfs()
+  node.LFS.ota_lfs_loader(
+    variables.SERVER_IP,
+    variables.LUA_IMAGE_OTA_PATH,
+    variables.LUA_IMAGE_NAME,
+    8080,
+    function()
+      node.LFS.main()
+    end
+  )
+
+  file.close("init.lua")
 end
 
 -- Define WiFi station event callbacks

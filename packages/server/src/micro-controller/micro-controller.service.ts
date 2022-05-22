@@ -82,7 +82,7 @@ export class MicroControllerService {
       ),
     );
 
-    console.log(1, res);
+    this.logger.log('MCU Response:', res);
   }
 
   public async getControllerById(

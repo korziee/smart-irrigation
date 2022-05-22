@@ -1,9 +1,7 @@
 local variables = require("variables")
 local shared = require("shared")
 
-local BUS_ID = 0
 local OP_READ_MOISTURE_SENSOR = 0x05
-
 local OP_LED_OFF = 0x00
 local OP_LED_ON = 0x01
 
@@ -22,7 +20,7 @@ local function send_sensor_value_to_server(sensor_id, value)
     shared.graphql_endpoint,
     "Content-Type: application/json\r\n",
     sjson.encode(body),
-    function(code, data)
+    function(code)
       if (code < 0) then
         print("HTTP request failed")
       else
@@ -34,17 +32,17 @@ local function send_sensor_value_to_server(sensor_id, value)
 end
 
 local function write_to_device(device_address, command)
-  i2c.start(BUS_ID)
+  i2c.start(variables.I2C_BUS_ID)
 
-  local writeAcknowledgement = i2c.address(BUS_ID, device_address, i2c.TRANSMITTER)
+  local writeAcknowledgement = i2c.address(variables.I2C_BUS_ID, device_address, i2c.TRANSMITTER)
 
   if not writeAcknowledgement then
     print("No write I2C acknowledge received for sensor address = " .. device_address)
     return nil
   end
 
-  i2c.write(BUS_ID, command)
-  i2c.stop(BUS_ID)
+  i2c.write(variables.I2C_BUS_ID, command)
+  i2c.stop(variables.I2C_BUS_ID)
 
   return true
 end
@@ -56,9 +54,9 @@ local function read_from_device(device_address)
     return nil
   end
 
-  i2c.start(BUS_ID)
+  i2c.start(variables.I2C_BUS_ID)
 
-  local readAcknowledgement = i2c.address(BUS_ID, device_address, i2c.RECEIVER)
+  local readAcknowledgement = i2c.address(variables.I2C_BUS_ID, device_address, i2c.RECEIVER)
 
   if not readAcknowledgement then
     print("No read I2C acknowledge received for sensor address = " .. device_address)
@@ -67,8 +65,8 @@ local function read_from_device(device_address)
 
   -- Read data, we only need to read the first byte because sensor only
   -- calcultes moisture between 0-255
-  local data = i2c.read(BUS_ID, 1)
-  i2c.stop(BUS_ID)
+  local data = i2c.read(variables.I2C_BUS_ID, 1)
+  i2c.stop(variables.I2C_BUS_ID)
 
   return string.byte(data)
 end
