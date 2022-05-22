@@ -1,15 +1,15 @@
 the lfs-files.lst file is used when you build LFS using docker
 
-docker run --rm -ti -v /Users/koryporter/nodemcu-firmware:/opt/nodemcu-firmware -v /Users/koryporter/dev/smart-irrigation/micro-controller/playground-scripts:/opt/lua marcelstoer/nodemcu-build lfs-image lfs-files.lst
+docker run --rm -ti -v /Users/koryporter/nodemcu-firmware:/opt/nodemcu-firmware -v /Users/koryporter/dev/smart-irrigation/micro-controller/app:/opt/lua marcelstoer/nodemcu-build lfs-image lfs-files.lst
 
-it is relevant to the root folder, i.e. in this instance it is playground-scripts.
+it is relevant to the root folder, i.e. in this instance it is app.
 
 # How is LFS working?
 
 1. There is a script at the root of this repo called `start:micro-controller`
    - This is running a http-server, and a node script
    - The http-server is a pretty basic file server used by the micro-controller to get the LFS image
-   - The node script watches the micro-controller/playground-scripts folder for changes
+   - The node script watches the micro-controller/app folder for changes
      - on change, this script re-compiles the LFS image using the nodemcu docker image
 2. Within the LFS image there is a file called `ota_lfs_loader.lua` which on restart, makes a GET request to the http-server and gets the LFS image
    - When it receives the image, it checks to see the last-modified header is the same as the previous request

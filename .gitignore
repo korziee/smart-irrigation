@@ -15,4 +15,5 @@ node_modules
 packages/**/lib
 
 .env
-micro-controller/playground-scripts/LFS_float_smart_irrigation.img
+micro-controller/app/LFS_float_smart_irrigation.img
+micro-controller/app/spiffs/variables.lua

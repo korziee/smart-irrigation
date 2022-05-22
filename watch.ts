@@ -1,7 +1,7 @@
 import { watch } from "fs";
 import { exec } from "node:child_process";
 
-const scripts = `${__dirname}/micro-controller/playground-scripts`;
+const scripts = `${__dirname}/micro-controller/app`;
 
 let lastChange = 0;
 
@@ -37,7 +37,7 @@ async function watcher() {
 
     // build LFS image using docker
     exec(
-      "docker run --rm -e IMAGE_NAME=smart_irrigation -v /Users/koryporter/nodemcu-firmware:/opt/nodemcu-firmware -v /Users/koryporter/dev/smart-irrigation/micro-controller/playground-scripts:/opt/lua marcelstoer/nodemcu-build lfs-image lfs-files.lst",
+      "docker run --rm -e IMAGE_NAME=smart_irrigation -v /Users/koryporter/nodemcu-firmware:/opt/nodemcu-firmware -v /Users/koryporter/dev/smart-irrigation/micro-controller/app:/opt/lua marcelstoer/nodemcu-build lfs-image lfs-files.lst",
       {
         encoding: "utf-8",
       },

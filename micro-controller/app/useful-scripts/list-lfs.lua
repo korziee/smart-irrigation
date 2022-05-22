@@ -11,6 +11,8 @@ do
 end
 
 file.remove("init-old.lua")
+file.remove("init.lua")
+file.remove("variables.lua")
 file.rename("init.lua", "init-old.lua")
 
 
