@@ -24,10 +24,16 @@ local reversed_example = {
   }
 }
 
+local inputs = {}
+local outputs = {}
 local reverse_table = {}
 
 for key, solenoid in pairs(values.SOLENOIDS) do
+  table.insert(outputs, solenoid.control_pin)
+
   for nested_key, value in pairs(solenoid.switch) do
+    table.insert(inputs, value)
+
     reverse_table[value] = {
       ["solenoid"] = key,
       ["action"] = nested_key
@@ -35,19 +41,6 @@ for key, solenoid in pairs(values.SOLENOIDS) do
   end
 end
 
-local function my_thing()
-  for pin, body in pairs(reverse_table) do
-    if pin == 2 then
-      break
-    end
-    for key, value in pairs(body) do
-      print(pin, key, value)
-    end
-  end
-
-  print("here fam")
-end
-
 for pin, value in pairs(reverse_table) do
-  print(pin, value.solenoid)
+  print(pin, value.solenoid, value.action)
 end

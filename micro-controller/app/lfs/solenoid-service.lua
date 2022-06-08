@@ -10,10 +10,16 @@ local INTCAPB_REGISTER = 0x11
 local mcp_instance
 local previous_gpb_state
 
--- TODO: is there a better way to do this?
+local inputs = {}
+local outputs = {}
 local reverse_table = {}
+
 for key, solenoid in pairs(variables.SOLENOIDS) do
+  table.insert(outputs, solenoid.control_pin)
+
   for nested_key, value in pairs(solenoid.switch) do
+    table.insert(inputs, value)
+
     reverse_table[value] = {
       ["solenoid"] = key,
       ["action"] = nested_key
@@ -29,15 +35,26 @@ local function handle_switch_interrupt()
   print("Current state", current_gbp_state)
   print("GBP diff", diff)
 
-  -- TODO: test if this works as expected
   for pin, values in pairs(reverse_table) do
-    if bit.isset(diff, pin) and bit.isclear(current_gbp_state, pin) then
-      print("Pin has changed state")
-      print("     pin: ", pin)
-      print("     operation: ", values.action)
-      print("     solenoid: ", values.solenoid)
-      -- based on operation, update solenoid and ping remote server
-      break
+    if bit.isset(diff, pin) then
+      local solenoid_control_pin = variables.SOLENOIDS[values.solenoid].control_pin
+      print("Switch state has changed")
+      print(string.format("%4s%-12s= %s", "", "input pin", pin))
+      print(string.format("%4s%-12s= %s", "", "solenoid", values.solenoid))
+      print(string.format("%4s%-12s= %s", "", "output pin", solenoid_control_pin))
+
+      if bit.isclear(current_gbp_state, pin) then
+        if values.action == "forced_on" then
+          print(string.format("%4s%-12s= %s (%s)", "", "operation", values.action, "high"))
+          mcp_instance:setPin(mcp_instance.GPA, solenoid_control_pin, mcp_instance.HIGH)
+        elseif values.action == "forced_off" then
+          print(string.format("%4s%-12s= %s (%s)", "", "operation", values.action, "low"))
+          mcp_instance:setPin(mcp_instance.GPA, solenoid_control_pin, mcp_instance.LOW)
+        end
+      else
+        print(string.format("%4s%-12s= %s (%s)", "", "operation", "auto", "low"))
+        mcp_instance:setPin(mcp_instance.GPA, solenoid_control_pin, mcp_instance.LOW)
+      end
     end
   end
 end
@@ -47,15 +64,37 @@ local function start_solenoid_service()
 
   mcp_instance = mcp23017(MCP23017_ADDRESS, variables.I2C_BUS_ID)
 
-  -- GP-A will control the solenoids (through the TIP120s)
-  -- sets the entire GPA register to be outputs.
-  mcp_instance:writeIODIR(mcp_instance.GPA, 0x00)
-  -- sets pins 6 and 7 to be high
-  mcp_instance:writeGPIO(mcp_instance.GPA, 0xc0 --[[ 11000000 ]])
+  print("Setting up MCP23017 I/O")
 
-  -- GP-B will listen for the switch inputs that decides for Auto/Off/On
-  -- sets the entire GPB register to be inputs.
-  mcp_instance:writeIODIR(mcp_instance.GPB, 0xff)
+  local output_byte = 255
+  local input_byte = 0
+
+  -- Outputs
+  for _, pin in ipairs(outputs) do
+    -- When setting outputs, the register is set to 0. 1 is high otherwise.
+    -- So we are setting those bits in output byte to be 0
+    output_byte = bit.clear(output_byte, pin)
+  end
+
+  -- Inputs
+  for _, pin in ipairs(inputs) do
+    input_byte = bit.set(input_byte, pin)
+  end
+
+  -- clean up globals after use
+  inputs = nil
+  outputs = nil
+
+  print("INPUTS", input_byte)
+  print("OUTPUTS", output_byte)
+
+  -- Setup outputs on GP-A side
+  mcp_instance:writeIODIR(mcp_instance.GPA, output_byte)
+  -- Reset GP-A output state
+  mcp_instance:writeGPIO(mcp_instance.GPA, 0x00)
+
+  -- Setup inputs on GP-B side
+  mcp_instance:writeIODIR(mcp_instance.GPB, input_byte)
 
   -- Sets the GPB side of the IC to have their inputs connected to a pull up resistor
   -- This means the input is pulled to 3.3v when its left floating
@@ -63,15 +102,14 @@ local function start_solenoid_service()
   i2c.start(variables.I2C_BUS_ID)
   i2c.address(variables.I2C_BUS_ID, MCP23017_ADDRESS, i2c.TRANSMITTER)
   i2c.write(variables.I2C_BUS_ID, GPPUB_REGISTER)
-  i2c.write(variables.I2C_BUS_ID, 0xff)
+  i2c.write(variables.I2C_BUS_ID, input_byte)
   i2c.stop(variables.I2C_BUS_ID)
 
-  -- TODO: make this programmatic
-  -- Enable interrupts on INTB (pin 19) for GPB-0-3
+  -- Enable interrupts on INTB for inputs on GPB side
   i2c.start(variables.I2C_BUS_ID)
   i2c.address(variables.I2C_BUS_ID, MCP23017_ADDRESS, i2c.TRANSMITTER)
   i2c.write(variables.I2C_BUS_ID, GPINTENB_REGISTER)
-  i2c.write(variables.I2C_BUS_ID, 0x0f)
+  i2c.write(variables.I2C_BUS_ID, input_byte)
   i2c.stop(variables.I2C_BUS_ID)
 
   -- Setting pin 5 to be input, ready for interrupt
