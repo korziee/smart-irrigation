@@ -1,4 +1,10 @@
-import React from "react";
+/**
+ * TODO: refactor me after POC
+ * - page per concept
+ * - homepage shows rough zone stats (irrigation job active, controller online, last reading, etc.)
+ */
+
+import React, { useState } from "react";
 
 import {
   Solenoid as SolenoidType,
@@ -17,6 +23,7 @@ import SensorsIcon from "@mui/icons-material/Sensors";
 import ModeIcon from "@mui/icons-material/Mode";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import InvertColorsOffIcon from "@mui/icons-material/InvertColorsOff";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -37,6 +44,7 @@ import {
   TableHead,
   TableCell,
   TableBody,
+  Snackbar,
 } from "@mui/material";
 import { Box } from "@mui/system";
 
@@ -58,7 +66,8 @@ const ZONE_QUERY = gql`
       sensors {
         id
         type
-        readings(take: 10) {
+        readings(take: 5) {
+          id
           reading
           createdAt
         }
@@ -69,13 +78,19 @@ const ZONE_QUERY = gql`
         controlMode
         open
       }
+      irrigationJobs(take: 5) {
+        id
+        start
+        end
+        active
+      }
     }
   }
 `;
 
 const UPDATE_SOLENOID_STATE = gql`
-  mutation UpdateSolenoidState($input: UpdateSolenoidModeInput!) {
-    updateSolenoidMode(updateSolenoidModeInput: $input) {
+  mutation UpdateSolenoidState($input: UpdateSolenoidFromClientInput!) {
+    updateSolenoidFromClient(updateSolenoidFromClientInput: $input) {
       id
       zoneId
       controlMode
@@ -108,12 +123,14 @@ const SolenoidStateButton: React.FC<{
   text: string;
   color: ButtonTypeMap["props"]["color"];
   onClick(): void;
+  disabled: boolean;
   selected: boolean;
-}> = ({ color, text, onClick, selected }) => {
+}> = ({ color, text, onClick, selected, disabled }) => {
   return (
     <Button
       onClick={onClick}
       fullWidth
+      disabled={disabled}
       color={color}
       variant={selected ? "contained" : "outlined"}
     >
@@ -125,20 +142,24 @@ const SolenoidStateButton: React.FC<{
 const SolenoidControlModeChanger: React.FC<{
   open: boolean;
   mode: SolenoidControlMode;
+  disabled: boolean;
   onChange(mode: SolenoidControlMode, open?: boolean): void;
-}> = ({ open, mode, onChange }) => {
+}> = ({ open, mode, onChange, disabled }) => {
+  console.log("SolenoidControlModeChanger", open, mode);
   return (
     <Grid container spacing={1}>
       <Grid item xs={4}>
         <SolenoidStateButton
+          disabled={disabled}
           color="success"
           text="Force On"
-          selected={mode === SolenoidControlMode.Manual && open}
-          onClick={() => onChange(SolenoidControlMode.Manual, true)}
+          selected={mode === SolenoidControlMode.Client && open}
+          onClick={() => onChange(SolenoidControlMode.Client, true)}
         />
       </Grid>
       <Grid item xs={4}>
         <SolenoidStateButton
+          disabled={disabled}
           color="info"
           text="Auto"
           selected={mode === SolenoidControlMode.Auto}
@@ -147,10 +168,11 @@ const SolenoidControlModeChanger: React.FC<{
       </Grid>
       <Grid item xs={4}>
         <SolenoidStateButton
+          disabled={disabled}
           color="error"
           text="Force Off"
-          selected={mode === SolenoidControlMode.Manual && !open}
-          onClick={() => onChange(SolenoidControlMode.Manual, false)}
+          selected={mode === SolenoidControlMode.Client && !open}
+          onClick={() => onChange(SolenoidControlMode.Client, false)}
         />
       </Grid>
     </Grid>
@@ -168,43 +190,71 @@ const SolenoidControlModeChanger: React.FC<{
 
 const Solenoid: React.FC<{ solenoid: SolenoidType }> = ({ solenoid }) => {
   const [mutateFunction] = useMutation(UPDATE_SOLENOID_STATE);
+  const [snackbarText, setSnackbarText] = useState("");
 
   const SolenoidIcon = solenoid.open ? InvertColorsIcon : InvertColorsOffIcon;
 
   return (
-    <Grid container spacing={1}>
-      <Grid item xs={12}>
-        <CentredText>
-          <FingerprintIcon sx={{ marginRight: 1 }} />
-          <Typography>{solenoid.id}</Typography>
-        </CentredText>
+    <>
+      <Snackbar
+        open={!!snackbarText}
+        message={snackbarText}
+        autoHideDuration={10000}
+        onClose={(event, reason) => {
+          setSnackbarText("");
+        }}
+      />
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <CentredText>
+            <FingerprintIcon sx={{ marginRight: 1 }} />
+            <Typography>{solenoid.id}</Typography>
+          </CentredText>
+        </Grid>
+        <Grid item xs={12}>
+          <CentredText>
+            <SolenoidIcon sx={{ marginRight: 1 }} />
+            <Typography>{solenoid.open ? "Open" : "Closed"}</Typography>
+          </CentredText>
+        </Grid>
+        <Grid item xs={12}>
+          <CentredText>
+            <SettingsIcon sx={{ marginRight: 1 }} />
+            <Typography sx={{ textTransform: "capitalize" }}>
+              {solenoid.controlMode}{" "}
+              {solenoid.controlMode === SolenoidControlMode.Physical
+                ? "(cannot update)"
+                : ""}
+            </Typography>
+          </CentredText>
+        </Grid>
+        <Grid item xs={12}>
+          <SolenoidControlModeChanger
+            mode={solenoid.controlMode}
+            open={solenoid.open}
+            disabled={solenoid.controlMode === SolenoidControlMode.Physical}
+            onChange={async (mode, open) => {
+              try {
+                await mutateFunction({
+                  variables: {
+                    input: {
+                      solenoidId: solenoid.id,
+                      zoneId: solenoid.zoneId,
+                      mode:
+                        mode === SolenoidControlMode.Auto ? "auto" : "client",
+                      open: mode === SolenoidControlMode.Auto ? false : open,
+                    },
+                  },
+                });
+              } catch (e) {
+                setSnackbarText((e as any).message);
+                throw e;
+              }
+            }}
+          />
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <CentredText>
-          <SolenoidIcon sx={{ marginRight: 1 }} />
-          <Typography>{solenoid.open ? "Open" : "Closed"}</Typography>
-        </CentredText>
-      </Grid>
-      <Grid item xs={12}>
-        <Typography>Control Mode</Typography>
-        <SolenoidControlModeChanger
-          mode={solenoid.controlMode}
-          open={solenoid.open}
-          onChange={(mode, open) => {
-            mutateFunction({
-              variables: {
-                input: {
-                  id: solenoid.id,
-                  zoneId: solenoid.zoneId,
-                  mode: mode,
-                  open,
-                },
-              },
-            });
-          }}
-        />
-      </Grid>
-    </Grid>
+    </>
   );
 };
 
@@ -306,6 +356,7 @@ const Controller: React.FC<{ controller: ControllerType }> = ({
 };
 
 const Zone: React.FC<{ zone: ZoneType }> = ({ zone }) => {
+  console.log("jobs", zone.irrigationJobs);
   return (
     <Box>
       <Typography variant="h4" sx={{ marginBottom: 1 }}>
@@ -330,35 +381,56 @@ const Zone: React.FC<{ zone: ZoneType }> = ({ zone }) => {
         <Grid item xs={12}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Typography variant="h6">Solenoids</Typography>
+              <Typography variant="h6">Jobs</Typography>
             </Grid>
-            {zone.solenoids.map((solenoid) => (
-              <Grid item xs={12} key={solenoid.id}>
+            {zone.irrigationJobs.map((job) => (
+              <Grid item xs={12} key={job.id}>
                 <Card>
                   <CardContent>
-                    <Solenoid solenoid={solenoid} />
+                    <Typography variant="body1">
+                      Active: {job.active ? "true" : "false"}
+                    </Typography>
+                    <Typography variant="body1">Start: {job.start}</Typography>
+                    <Typography variant="body1">End: {job.end}</Typography>
                   </CardContent>
                 </Card>
               </Grid>
             ))}
           </Grid>
         </Grid>
+      </Grid>
 
-        <Grid item xs={12}>
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Typography variant="h6">Sensors</Typography>
-            </Grid>
-            {zone.sensors.map((sensor) => (
-              <Grid item xs={12} key={sensor.id}>
-                <Card>
-                  <CardContent>
-                    <Sensor sensor={sensor} />
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+      <Grid item xs={12}>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Typography variant="h6">Solenoids</Typography>
           </Grid>
+          {zone.solenoids.map((solenoid) => (
+            <Grid item xs={12} key={solenoid.id}>
+              <Card>
+                <CardContent>
+                  <Solenoid solenoid={solenoid} />
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Typography variant="h6">Sensors</Typography>
+          </Grid>
+          {zone.sensors.map((sensor) => (
+            <Grid item xs={12} key={sensor.id}>
+              <Card>
+                <CardContent>
+                  <Sensor sensor={sensor} />
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
         </Grid>
       </Grid>
     </Box>

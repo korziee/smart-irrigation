@@ -28,6 +28,20 @@ export type ControllerHeartbeatInput = {
   id: Scalars['ID'];
 };
 
+export type IrrigationJob = {
+  __typename?: 'IrrigationJob';
+  /** Whether or not the job is active */
+  active: Scalars['Boolean'];
+  /** Describes when the job should end */
+  end: Scalars['DateTime'];
+  /** Job ID */
+  id: Scalars['ID'];
+  /** Describes when the job started */
+  start: Scalars['DateTime'];
+  /** The ID of the zone this job is for */
+  zoneId: Scalars['ID'];
+};
+
 export type MicroController = {
   __typename?: 'MicroController';
   /** Config for the micro controller */
@@ -50,7 +64,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   controllerHeartbeat: MicroController;
   sensorReading: SensorReading;
-  updateSolenoidMode: Solenoid;
+  updateSolenoidFromClient: Solenoid;
+  updateSolenoidFromMicroController: Solenoid;
 };
 
 
@@ -64,8 +79,13 @@ export type MutationSensorReadingArgs = {
 };
 
 
-export type MutationUpdateSolenoidModeArgs = {
-  updateSolenoidModeInput: UpdateSolenoidModeInput;
+export type MutationUpdateSolenoidFromClientArgs = {
+  updateSolenoidFromClientInput: UpdateSolenoidFromClientInput;
+};
+
+
+export type MutationUpdateSolenoidFromMicroControllerArgs = {
+  updateSolenoidFromMicroControllerInput: UpdateSolenoidFromMicroControllerInput;
 };
 
 export type Query = {
@@ -113,7 +133,7 @@ export enum SensorType {
 
 export type Solenoid = {
   __typename?: 'Solenoid';
-  /** Describes if the solenoid is being controller manually or automatic */
+  /** Describes if the solenoid is being controlled manually or automatically */
   controlMode: SolenoidControlMode;
   /** ID of the Solenoid */
   id: Scalars['ID'];
@@ -123,16 +143,34 @@ export type Solenoid = {
   zoneId: Scalars['ID'];
 };
 
-export enum SolenoidControlMode {
+export enum SolenoidClientControlModes {
   Auto = 'auto',
-  Manual = 'manual'
+  Client = 'client'
 }
 
-export type UpdateSolenoidModeInput = {
-  id: Scalars['ID'];
-  mode: SolenoidControlMode;
-  open?: InputMaybe<Scalars['Boolean']>;
+export enum SolenoidControlMode {
+  Auto = 'auto',
+  Client = 'client',
+  Physical = 'physical'
+}
+
+export enum SolenoidMicroControllerControlModes {
+  Auto = 'auto',
+  Physical = 'physical'
+}
+
+export type UpdateSolenoidFromClientInput = {
+  mode: SolenoidClientControlModes;
+  open: Scalars['Boolean'];
+  solenoidId: Scalars['ID'];
   zoneId: Scalars['ID'];
+};
+
+export type UpdateSolenoidFromMicroControllerInput = {
+  controllerId: Scalars['ID'];
+  mode: SolenoidMicroControllerControlModes;
+  open: Scalars['Boolean'];
+  solenoidId: Scalars['ID'];
 };
 
 export type Zone = {
@@ -142,8 +180,17 @@ export type Zone = {
   controllerId: Scalars['ID'];
   /** Zone ID */
   id: Scalars['ID'];
+  /** Irrigation jobs for a given zone */
+  irrigationJobs: Array<IrrigationJob>;
   /** Friendly name of the zone */
   name?: Maybe<Scalars['String']>;
   sensors: Array<Sensor>;
   solenoids: Array<Solenoid>;
+};
+
+
+export type ZoneIrrigationJobsArgs = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  skip?: InputMaybe<Scalars['Float']>;
+  take: Scalars['Float'];
 };
