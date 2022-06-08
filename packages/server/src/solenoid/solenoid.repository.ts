@@ -18,6 +18,17 @@ export class SolenoidRepository {
     return solenoid;
   }
 
+  public async findById(id: string): Promise<Solenoid> {
+    const row = await this.prisma.solenoid.findUnique({
+      where: {
+        id,
+      },
+      rejectOnNotFound: true,
+    });
+
+    return this.mapDbRowToSolenoid(row);
+  }
+
   public async findMany(query?: { zoneId?: string }): Promise<Solenoid[]> {
     const results = await this.prisma.solenoid.findMany({
       where: {

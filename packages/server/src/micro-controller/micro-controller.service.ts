@@ -60,6 +60,11 @@ export class MicroControllerService {
   ): Promise<void> {
     const controller = await this.repository.findById(controllerId);
 
+    this.logger.log('sendControllerMessage called', {
+      message,
+      route: this.messageTypeRouteMap[message.type],
+    });
+
     if (this.config.get('ENV') === 'LOCAL') {
       this.logger.log(
         "Skipping HTTP request to controller as we're running in a local environment",

@@ -1,8 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { sub, add } from 'date-fns';
+import { SolenoidService } from 'src/solenoid/solenoid.service';
+import { PaginationParameters } from 'src/types/pagination-params';
 import { Zone } from '../zone/entities/zone.entity';
 
 import { ZoneService } from '../zone/zone.service';
+import { IrrigationJob } from './entities/irrigation-job.entity';
 import { IrrigationRepository } from './irrigation.repository';
 import { MoistureLevel } from './types/moisture-level';
 
@@ -10,6 +13,8 @@ import { MoistureLevel } from './types/moisture-level';
 export class IrrigationService {
   constructor(
     private readonly repository: IrrigationRepository,
+    private readonly solenoidService: SolenoidService,
+    @Inject(forwardRef(() => ZoneService))
     private readonly zoneService: ZoneService,
   ) {}
 
@@ -59,6 +64,42 @@ export class IrrigationService {
     clearTimeout(this.jobTimerId);
   }
 
+  public async handleSolenoidOverride(zoneId: string) {
+    const activeJobsInZone = await this.repository.findManyJobs({
+      where: {
+        zone_id: zoneId,
+        active: true,
+      },
+    });
+
+    // no active jobs, no need to do anything here
+    if (activeJobsInZone.length === 0) {
+      this.logger.verbose(
+        'No active jobs in zone, no action after solenoid override',
+      );
+      return;
+    }
+
+    const solenoidsInZone = await this.solenoidService.findMany({ zoneId });
+
+    // at least one solenoid in zone is still being manually controlled
+    // we do not need to stop any ongoing irrigation jobs
+    if (solenoidsInZone.find((s) => s.controlMode === 'auto')) {
+      this.logger.verbose(
+        'At least one solenoid is in the auto control mode, no action after solenoid override',
+      );
+      return;
+    }
+
+    const jobsToExpire = activeJobsInZone.map(({ id }) => id);
+
+    this.logger.log('Cancelling jobs after solenoid override', jobsToExpire);
+
+    // otherwise, all solenoids are being manually controlled, we need to
+    // cancel the active jobs
+    await this.repository.markJobsAsInactive(jobsToExpire);
+  }
+
   public async handleExpiredJobs() {
     const expiredActiveJobs = await this.repository.findManyJobs({
       where: {
@@ -72,7 +113,12 @@ export class IrrigationService {
     // ask zone service to turn off all solenoids in zone
     await Promise.all(
       expiredActiveJobs.map(async (ej) =>
-        this.zoneService.updateAllSolenoidsInZone(ej.zoneId, false),
+        this.zoneService.updateAllSolenoidsInZone(
+          ej.zoneId,
+          'irrigation-service',
+          'auto',
+          false,
+        ),
       ),
     );
 
@@ -135,7 +181,12 @@ export class IrrigationService {
         if (['dry', 'dryish'].includes(zoneMoistureLevel)) {
           this.logger.log(`Starting irrigation in zone with id: ${zone.id}`);
 
-          await this.zoneService.updateAllSolenoidsInZone(zone.id, true);
+          await this.zoneService.updateAllSolenoidsInZone(
+            zone.id,
+            'irrigation-service',
+            'auto',
+            true,
+          );
           await this.repository.createManyJobs([
             {
               zoneId: zone.id,
@@ -154,5 +205,25 @@ export class IrrigationService {
         );
       }
     }
+  }
+
+  public async getIrrigationJobsForZone(
+    filter: {
+      zoneId: string;
+      active: boolean | null;
+    },
+    pagination?: PaginationParameters,
+  ): Promise<IrrigationJob[]> {
+    return this.repository.findManyJobs({
+      where: {
+        zone_id: filter.zoneId,
+        active: filter.active === null ? undefined : filter.active,
+      },
+      orderBy: {
+        start: 'desc',
+      },
+      skip: pagination?.skip,
+      take: pagination?.take,
+    });
   }
 }

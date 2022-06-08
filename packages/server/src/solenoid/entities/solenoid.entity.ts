@@ -16,7 +16,7 @@ export class Solenoid {
 
   @Field(() => solenoid_control_mode, {
     description:
-      'Describes if the solenoid is being controller manually or automatic',
+      'Describes if the solenoid is being controlled manually or automatically',
   })
   controlMode: SolenoidControlMode;
 

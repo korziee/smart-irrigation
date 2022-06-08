@@ -1,5 +1,5 @@
 {
-  "port": "/dev/tty.usbserial-14110",
+  "port": "/dev/tty.usbserial-14310",
   "connectionDelay": 300,
   "minify": false,
   "compile": false,

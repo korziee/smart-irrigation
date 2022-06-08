@@ -78,7 +78,9 @@ type Solenoid {
   """Zone ID for which this solenoid resides"""
   zoneId: ID!
 
-  """Describes if the solenoid is being controller manually or automatic"""
+  """
+  Describes if the solenoid is being controlled manually or automatically
+  """
   controlMode: SolenoidControlMode!
 
   """Describes if the solenoid is open or closed or not"""
@@ -87,7 +89,8 @@ type Solenoid {
 
 enum SolenoidControlMode {
   auto
-  manual
+  physical
+  client
 }
 
 type Zone {
@@ -102,6 +105,26 @@ type Zone {
   sensors: [Sensor!]!
   solenoids: [Solenoid!]!
   controller: MicroController!
+
+  """Irrigation jobs for a given zone"""
+  irrigationJobs(take: Float!, skip: Float = 0, active: Boolean): [IrrigationJob!]!
+}
+
+type IrrigationJob {
+  """Job ID"""
+  id: ID!
+
+  """The ID of the zone this job is for"""
+  zoneId: ID!
+
+  """Whether or not the job is active"""
+  active: Boolean!
+
+  """Describes when the job started"""
+  start: DateTime!
+
+  """Describes when the job should end"""
+  end: DateTime!
 }
 
 type Query {
@@ -111,7 +134,8 @@ type Query {
 type Mutation {
   controllerHeartbeat(controllerHeartbeatInput: ControllerHeartbeatInput!): MicroController!
   sensorReading(sensorReadingInput: SensorReadingInput!): SensorReading!
-  updateSolenoidMode(updateSolenoidModeInput: UpdateSolenoidModeInput!): Solenoid!
+  updateSolenoidFromClient(updateSolenoidFromClientInput: UpdateSolenoidFromClientInput!): Solenoid!
+  updateSolenoidFromMicroController(updateSolenoidFromMicroControllerInput: UpdateSolenoidFromMicroControllerInput!): Solenoid!
 }
 
 input ControllerHeartbeatInput {
@@ -123,9 +147,26 @@ input SensorReadingInput {
   reading: Int!
 }
 
-input UpdateSolenoidModeInput {
-  id: ID!
+input UpdateSolenoidFromClientInput {
+  solenoidId: ID!
+  open: Boolean!
   zoneId: ID!
-  mode: SolenoidControlMode!
-  open: Boolean
+  mode: SolenoidClientControlModes!
+}
+
+enum SolenoidClientControlModes {
+  client
+  auto
+}
+
+input UpdateSolenoidFromMicroControllerInput {
+  solenoidId: ID!
+  open: Boolean!
+  controllerId: ID!
+  mode: SolenoidMicroControllerControlModes!
+}
+
+enum SolenoidMicroControllerControlModes {
+  physical
+  auto
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { MicroControllerService } from '../micro-controller/micro-controller.service';
 import { MicroController } from '../micro-controller/entities/micro-controller.entity';
 import { ZoneRepository } from './zone.repository';
@@ -6,8 +6,23 @@ import { Solenoid } from '../solenoid/entities/solenoid.entity';
 import { Zone } from './entities/zone.entity';
 import { SensorReading } from '../sensor/entities/sensor-reading.entity';
 import { SensorRepository } from '../sensor/sensor.repository';
-import { SolenoidRepository } from '../solenoid/solenoid.repository';
 import { Sensor } from '../sensor/entities/sensor.entity';
+import { SolenoidService } from 'src/solenoid/solenoid.service';
+import { IrrigationService } from 'src/irrigation/irrigation.service';
+
+type SolenoidUpdate = {
+  solenoidId: string;
+  mode: Solenoid['controlMode'];
+  open: boolean;
+  source: 'client' | 'micro-controller' | 'irrigation-service';
+} & (
+  | {
+      source: 'client' | 'irrigation-service';
+      zoneId: string;
+      controllerId?: never;
+    }
+  | { source: 'micro-controller'; zoneId?: never }
+);
 
 @Injectable()
 export class ZoneService {
@@ -15,7 +30,9 @@ export class ZoneService {
     private readonly repository: ZoneRepository,
     private readonly microControllerService: MicroControllerService,
     private readonly sensorRepository: SensorRepository,
-    private readonly solenoidRepository: SolenoidRepository,
+    private readonly solenoidService: SolenoidService,
+    @Inject(forwardRef(() => IrrigationService))
+    private readonly irrigationService: IrrigationService,
   ) {}
 
   public async getControllerForZone(zoneId: string): Promise<MicroController> {
@@ -24,44 +41,69 @@ export class ZoneService {
     return this.microControllerService.getControllerById(zone.controllerId);
   }
 
-  /**
-   * Updates local and remote states for the solenoid
-   */
-  public async updateSolenoid(
-    solenoidId: string,
-    zoneId: string,
-    mode: Solenoid['controlMode'],
-    open: boolean,
-  ): Promise<Solenoid> {
-    const controller = await this.getControllerForZone(zoneId);
+  public async updateSolenoid({
+    mode,
+    open,
+    solenoidId,
+    source,
+    zoneId,
+  }: SolenoidUpdate): Promise<Solenoid> {
+    const solenoid = await this.solenoidService.findById(solenoidId);
 
-    // tell controller to update remote state
-    await this.microControllerService.sendControllerMessage(controller.id, {
-      type: 'UPDATE_SOLENOID_STATE',
-      data: {
-        solenoidId: solenoidId,
-        open,
-      },
-    });
+    // disallow updates if the solenoid is in a physical control state
+    if (solenoid.controlMode === 'physical' && source !== 'micro-controller') {
+      throw new Error(
+        `Cannot switch to "${mode}" mode - solenoid ${solenoidId} is currently in the physical control mode, micro-controller has explicit control`,
+      );
+    }
 
-    return this.solenoidRepository.update({
+    if (source === 'client') {
+      // we need to update the MCU remotely
+      const controller = await this.getControllerForZone(zoneId);
+
+      // tell controller to update remote state
+      await this.microControllerService.sendControllerMessage(controller.id, {
+        type: 'UPDATE_SOLENOID_STATE',
+        data: {
+          solenoidId: solenoidId,
+          open,
+        },
+      });
+    }
+
+    const updatedSolenoid = await this.solenoidService.update({
       id: solenoidId,
       open,
       controlMode: mode,
     });
+
+    if (source !== 'irrigation-service') {
+      // tell irrigation-service that a solenoid in a zone has gone into a manual control state
+      await this.irrigationService.handleSolenoidOverride(solenoid.zoneId);
+    }
+
+    return updatedSolenoid;
   }
 
   public async updateAllSolenoidsInZone(
     zoneId: string,
+    source: 'client' | 'irrigation-service',
+    mode: Solenoid['controlMode'],
     open: boolean,
   ): Promise<Solenoid[]> {
-    const solenoids = await this.solenoidRepository.findMany({
+    const solenoids = await this.solenoidService.findMany({
       zoneId,
     });
 
     const updatedSolenoids = await Promise.all(
       solenoids.map(async (solenoid) => {
-        return this.updateSolenoid(solenoid.id, zoneId, 'auto', open);
+        return this.updateSolenoid({
+          solenoidId: solenoid.id,
+          source,
+          mode,
+          open,
+          zoneId,
+        });
       }),
     );
 
@@ -89,7 +131,7 @@ export class ZoneService {
   }
 
   public async getSolenoidsInZone(zoneId: string): Promise<Solenoid[]> {
-    return this.solenoidRepository.findMany({
+    return this.solenoidService.findMany({
       zoneId,
     });
   }

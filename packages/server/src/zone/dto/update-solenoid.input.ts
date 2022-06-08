@@ -1,17 +1,46 @@
-import { InputType, Field, ID } from '@nestjs/graphql';
-import { solenoid_control_mode } from '@smart-irrigation/prisma';
+import { InputType, Field, ID, registerEnumType } from '@nestjs/graphql';
+
+const SolenoidClientControlModes = {
+  client: 'client',
+  auto: 'auto',
+};
+
+const SolenoidMicroControllerControlModes = {
+  physical: 'physical',
+  auto: 'auto',
+};
+
+registerEnumType(SolenoidClientControlModes, {
+  name: 'SolenoidClientControlModes',
+});
+
+registerEnumType(SolenoidMicroControllerControlModes, {
+  name: 'SolenoidMicroControllerControlModes',
+});
 
 @InputType()
-export class UpdateSolenoidModeInput {
+class UpdateSolenoidInput {
   @Field(() => ID)
-  id: string;
+  solenoidId: string;
 
+  @Field(() => Boolean)
+  open: boolean;
+}
+
+@InputType()
+export class UpdateSolenoidFromClientInput extends UpdateSolenoidInput {
   @Field(() => ID)
   zoneId: string;
 
-  @Field(() => solenoid_control_mode)
-  mode: solenoid_control_mode;
+  @Field(() => SolenoidClientControlModes)
+  mode: keyof typeof SolenoidClientControlModes;
+}
 
-  @Field({ nullable: true })
-  open?: boolean;
+@InputType()
+export class UpdateSolenoidFromMicroControllerInput extends UpdateSolenoidInput {
+  @Field(() => ID)
+  controllerId: string;
+
+  @Field(() => SolenoidMicroControllerControlModes)
+  mode: keyof typeof SolenoidMicroControllerControlModes;
 }
