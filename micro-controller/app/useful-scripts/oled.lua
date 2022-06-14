@@ -1,4 +1,4 @@
-local sla = 0x3c
+local sla = 0x78
 print("before")
 local disp =
   u8g2.ssd1306_i2c_128x64_noname(
