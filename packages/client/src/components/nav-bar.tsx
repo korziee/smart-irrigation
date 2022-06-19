@@ -7,12 +7,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { routes } from "../routes";
 
+const LINK_CENTER_STYLES = {
+  display: "flex",
+};
+
 export const NavBar: React.FC = () => {
   const location = useLocation();
   const theme = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  console.log(1, theme.palette.background.default);
 
   return (
     <Box
@@ -37,7 +39,7 @@ export const NavBar: React.FC = () => {
               alignItems: "center",
             }}
           >
-            <Link to={routes.home.path}>
+            <Link to={routes.home.path} style={LINK_CENTER_STYLES}>
               <HomeIcon />
             </Link>
             <Typography
