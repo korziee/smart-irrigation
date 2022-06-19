@@ -26,7 +26,7 @@ const theme = createTheme({
   },
 });
 
-let Zone = (props: RouteComponentProps) => {
+const Zone: React.FC<RouteComponentProps> = () => {
   const params = useParams();
   return <div>Zone: {params.zoneId}</div>;
 };
