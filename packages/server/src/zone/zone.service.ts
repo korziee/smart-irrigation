@@ -9,6 +9,10 @@ import { SensorRepository } from '../sensor/sensor.repository';
 import { Sensor } from '../sensor/entities/sensor.entity';
 import { SolenoidService } from 'src/solenoid/solenoid.service';
 import { IrrigationService } from 'src/irrigation/irrigation.service';
+import {
+  ZoneIrrigationList,
+  ZoneIrrigationListItem,
+} from './entities/zone-irrigation-list.entity';
 
 type SolenoidUpdate = {
   solenoidId: string;
@@ -160,5 +164,60 @@ export class ZoneService {
       },
       take: query.take,
     });
+  }
+
+  // big ol hack here
+  public async getIrrigationSummary(): Promise<ZoneIrrigationList> {
+    const smart: ZoneIrrigationListItem[] = [];
+    const physical: ZoneIrrigationListItem[] = [];
+
+    const solenoids = await this.solenoidService.findMany();
+
+    solenoids.forEach((solenoid) => {
+      if (!solenoid.open) {
+        return;
+      }
+
+      const zone = {
+        zoneId: solenoid.zoneId,
+        name: '',
+      };
+
+      if (
+        solenoid.controlMode === 'physical' ||
+        solenoid.controlMode === 'client'
+      ) {
+        physical.push(zone);
+      } else {
+        smart.push(zone);
+      }
+    });
+
+    const zonesToFetch = new Set(
+      [...smart, ...physical].map(({ zoneId }) => zoneId),
+    );
+
+    const zones = await this.repository.findMany({
+      where: {
+        id: {
+          in: [...zonesToFetch.values()],
+        },
+      },
+    });
+
+    return {
+      smart: smart.map(({ zoneId }) => {
+        return {
+          zoneId,
+          name: zones.find((zone) => zone.id === zoneId).name,
+        };
+      }),
+      physical: physical.map(({ zoneId }) => {
+        return {
+          zoneId,
+          name: zones.find((zone) => zone.id === zoneId).name,
+        };
+      }),
+    };
   }
 }

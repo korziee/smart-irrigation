@@ -32,7 +32,7 @@ export class SolenoidRepository {
   public async findMany(query?: { zoneId?: string }): Promise<Solenoid[]> {
     const results = await this.prisma.solenoid.findMany({
       where: {
-        zone_id: query.zoneId,
+        zone_id: query?.zoneId,
       },
     });
 

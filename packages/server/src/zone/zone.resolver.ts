@@ -18,6 +18,7 @@ import {
 import { IrrigationJob } from 'src/irrigation/entities/irrigation-job.entity';
 import { IrrigationService } from 'src/irrigation/irrigation.service';
 import { IrrigationJobsArgs } from './dto/irrigation-jobs.args';
+import { ZoneIrrigationList } from './entities/zone-irrigation-list.entity';
 
 @Resolver(() => Zone)
 export class ZoneResolver {
@@ -63,6 +64,11 @@ export class ZoneResolver {
   @Query(() => [Zone], { name: 'zones' })
   findAll() {
     return this.zoneService.getAllZones();
+  }
+
+  @Query(() => ZoneIrrigationList, { name: 'irrigationSummary' })
+  irrigationSummary() {
+    return this.zoneService.getIrrigationSummary();
   }
 
   @Mutation(() => Solenoid)

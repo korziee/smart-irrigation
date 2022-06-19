@@ -127,8 +127,19 @@ type IrrigationJob {
   end: DateTime!
 }
 
+type ZoneIrrigationListItem {
+  zoneId: ID!
+  name: String!
+}
+
+type ZoneIrrigationList {
+  physical: [ZoneIrrigationListItem!]!
+  smart: [ZoneIrrigationListItem!]!
+}
+
 type Query {
   zones: [Zone!]!
+  irrigationSummary: ZoneIrrigationList!
 }
 
 type Mutation {
