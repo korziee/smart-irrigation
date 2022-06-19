@@ -220,4 +220,8 @@ export class ZoneService {
       }),
     };
   }
+
+  public async getZoneById(id: string): Promise<Zone> {
+    return this.repository.findOne(id);
+  }
 }

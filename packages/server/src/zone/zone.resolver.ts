@@ -5,6 +5,7 @@ import {
   Parent,
   Mutation,
   Args,
+  ID,
 } from '@nestjs/graphql';
 import { ZoneService } from './zone.service';
 import { Zone } from './entities/zone.entity';
@@ -59,6 +60,11 @@ export class ZoneResolver {
         take: filter.take,
       },
     );
+  }
+
+  @Query(() => Zone, { name: 'zone' })
+  findById(@Args('id', { type: () => ID }) id: string) {
+    return this.zoneService.getZoneById(id);
   }
 
   @Query(() => [Zone], { name: 'zones' })

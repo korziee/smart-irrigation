@@ -138,6 +138,7 @@ type ZoneIrrigationList {
 }
 
 type Query {
+  zone(id: ID!): Zone!
   zones: [Zone!]!
   irrigationSummary: ZoneIrrigationList!
 }
