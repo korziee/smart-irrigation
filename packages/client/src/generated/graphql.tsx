@@ -94,7 +94,13 @@ export type MutationUpdateSolenoidFromMicroControllerArgs = {
 export type Query = {
   __typename?: 'Query';
   irrigationSummary: ZoneIrrigationList;
+  zone: Zone;
   zones: Array<Zone>;
+};
+
+
+export type QueryZoneArgs = {
+  id: Scalars['ID'];
 };
 
 export type Sensor = {
@@ -221,6 +227,18 @@ export type IrrigationSummaryQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type IrrigationSummaryQuery = { __typename?: 'Query', irrigationSummary: { __typename?: 'ZoneIrrigationList', smart: Array<{ __typename?: 'ZoneIrrigationListItem', zoneId: string, name: string }>, physical: Array<{ __typename?: 'ZoneIrrigationListItem', zoneId: string, name: string }> } };
 
+export type ZoneByIdQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type ZoneByIdQuery = { __typename?: 'Query', zone: { __typename?: 'Zone', id: string, name?: string | null } };
+
+export type ZoneListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ZoneListQuery = { __typename?: 'Query', zones: Array<{ __typename?: 'Zone', id: string, name?: string | null }> };
+
 
 export const ZoneControllerStatusDocument = gql`
     query ZoneControllerStatus {
@@ -304,3 +322,74 @@ export function useIrrigationSummaryLazyQuery(baseOptions?: Apollo.LazyQueryHook
 export type IrrigationSummaryQueryHookResult = ReturnType<typeof useIrrigationSummaryQuery>;
 export type IrrigationSummaryLazyQueryHookResult = ReturnType<typeof useIrrigationSummaryLazyQuery>;
 export type IrrigationSummaryQueryResult = Apollo.QueryResult<IrrigationSummaryQuery, IrrigationSummaryQueryVariables>;
+export const ZoneByIdDocument = gql`
+    query ZoneById($id: ID!) {
+  zone(id: $id) {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useZoneByIdQuery__
+ *
+ * To run a query within a React component, call `useZoneByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useZoneByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useZoneByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useZoneByIdQuery(baseOptions: Apollo.QueryHookOptions<ZoneByIdQuery, ZoneByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ZoneByIdQuery, ZoneByIdQueryVariables>(ZoneByIdDocument, options);
+      }
+export function useZoneByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ZoneByIdQuery, ZoneByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ZoneByIdQuery, ZoneByIdQueryVariables>(ZoneByIdDocument, options);
+        }
+export type ZoneByIdQueryHookResult = ReturnType<typeof useZoneByIdQuery>;
+export type ZoneByIdLazyQueryHookResult = ReturnType<typeof useZoneByIdLazyQuery>;
+export type ZoneByIdQueryResult = Apollo.QueryResult<ZoneByIdQuery, ZoneByIdQueryVariables>;
+export const ZoneListDocument = gql`
+    query ZoneList {
+  zones {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useZoneListQuery__
+ *
+ * To run a query within a React component, call `useZoneListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useZoneListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useZoneListQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useZoneListQuery(baseOptions?: Apollo.QueryHookOptions<ZoneListQuery, ZoneListQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ZoneListQuery, ZoneListQueryVariables>(ZoneListDocument, options);
+      }
+export function useZoneListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ZoneListQuery, ZoneListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ZoneListQuery, ZoneListQueryVariables>(ZoneListDocument, options);
+        }
+export type ZoneListQueryHookResult = ReturnType<typeof useZoneListQuery>;
+export type ZoneListLazyQueryHookResult = ReturnType<typeof useZoneListLazyQuery>;
+export type ZoneListQueryResult = Apollo.QueryResult<ZoneListQuery, ZoneListQueryVariables>;

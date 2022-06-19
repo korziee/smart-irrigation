@@ -1,10 +1,12 @@
 import { CssBaseline } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { ThemeProvider } from "@mui/system";
-import { RouteComponentProps, Router, useParams } from "@reach/router";
+import { RouteComponentProps, Router } from "@reach/router";
 import React from "react";
 import { NavBar } from "./components/nav-bar";
 import { Home } from "./pages/home";
+import { Zone } from "./pages/zone";
+import { Zones } from "./pages/zones";
 
 const theme = createTheme({
   palette: {
@@ -26,11 +28,6 @@ const theme = createTheme({
   },
 });
 
-const Zone: React.FC<RouteComponentProps> = () => {
-  const params = useParams();
-  return <div>Zone: {params.zoneId}</div>;
-};
-
 const App: React.FC<RouteComponentProps> = ({ children }) => {
   return (
     <>
@@ -46,6 +43,7 @@ const Main: React.FC = ({ children }) => (
     <Router>
       <App path="/">
         <Home path="/" />
+        <Zones path="/zones" />
         <Zone path="/zones/:zoneId" />
       </App>
     </Router>
