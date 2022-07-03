@@ -7,9 +7,8 @@ export class MicroController {
 
   @Field({
     description: "The micro controller's friendly name",
-    nullable: true,
   })
-  name?: string;
+  name: string;
 
   @Field({ description: 'IP address of the micro controller', nullable: true })
   ipAddress?: string;

@@ -15,7 +15,7 @@ export class MicroControllerRepository {
     controller.configId = dbRow.config_id;
     controller.ipAddress = dbRow.ip_address;
     controller.lastBoot = dbRow.last_boot;
-    controller.name = dbRow.friendly_name;
+    controller.name = dbRow.name;
     controller.online = dbRow.online;
 
     return controller;

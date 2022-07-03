@@ -7,7 +7,7 @@ type MicroController {
   id: ID!
 
   """The micro controller's friendly name"""
-  name: String
+  name: String!
 
   """IP address of the micro controller"""
   ipAddress: String
