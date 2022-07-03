@@ -1,8 +1,8 @@
 import * as React from "react";
-import { useZoneListQuery } from "../../generated/graphql";
-import { Link, RouteComponentProps } from "@reach/router";
 import { gql } from "@apollo/client";
-import { Button, Box, Typography } from "@mui/material";
+import { Link, RouteComponentProps } from "@reach/router";
+import { Button, Box, Typography, Card, CardContent } from "@mui/material";
+import { useZoneListQuery } from "../../generated/graphql";
 import { PageTemplate } from "../../components";
 
 export const GQL_ZONE_LIST = gql`
@@ -23,23 +23,27 @@ export const Zones: React.FC<RouteComponentProps> = () => {
 
   return (
     <PageTemplate>
-      <Typography variant="h4" gutterBottom>
-        Zones
-      </Typography>
-      <Box display="flex" flexDirection={"row"} alignItems="flex-start">
-        {data.zones.map((zone) => (
-          <Link to={`/zones/${zone.id}`}>
-            <Button
-              variant="contained"
-              sx={{
-                mr: 1,
-              }}
-            >
-              {zone.name}
-            </Button>
-          </Link>
-        ))}
-      </Box>
+      <Card>
+        <CardContent>
+          <Typography variant="h4" gutterBottom>
+            Zones
+          </Typography>
+          <Box display="flex" flexDirection={"row"} alignItems="flex-start">
+            {data.zones.map((zone) => (
+              <Link to={`/zones/${zone.id}`}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    mr: 1,
+                  }}
+                >
+                  {zone.name}
+                </Button>
+              </Link>
+            ))}
+          </Box>
+        </CardContent>
+      </Card>
     </PageTemplate>
   );
 };

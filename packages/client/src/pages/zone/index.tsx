@@ -1,15 +1,21 @@
 import * as React from "react";
-import { useZoneByIdQuery } from "../../generated/graphql";
-import { Link, RouteComponentProps, useParams } from "@reach/router";
+import { RouteComponentProps, useParams } from "@reach/router";
 import { gql } from "@apollo/client";
-import { Button, Box, Typography } from "@mui/material";
+import { useZoneByIdQuery } from "../../generated/graphql";
 import { PageTemplate } from "../../components";
+import { useSetTitle } from "../../contexts/navbar-title";
+import { ControllerCard } from "./components/controller-card";
 
 export const GQL_ZONE = gql`
   query ZoneById($id: ID!) {
     zone(id: $id) {
       id
       name
+      controller {
+        id
+        name
+        online
+      }
     }
   }
 `;
@@ -21,15 +27,15 @@ export const Zone: React.FC<RouteComponentProps> = () => {
     variables: { id: params.zoneId },
   });
 
+  useSetTitle(data?.zone.name);
+
   if (loading || !data) {
     return null;
   }
 
   return (
     <PageTemplate>
-      <Typography variant="h4" gutterBottom>
-        {data.zone.name}
-      </Typography>
+      <ControllerCard {...data.zone.controller} />
     </PageTemplate>
   );
 };

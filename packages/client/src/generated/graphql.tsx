@@ -58,7 +58,7 @@ export type MicroController = {
   /** Describes if the micro controller is online and active */
   lastBoot?: Maybe<Scalars['DateTime']>;
   /** The micro controller's friendly name */
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
   /** Describes if the micro controller is online and active */
   online: Scalars['Boolean'];
 };
@@ -233,7 +233,7 @@ export type ZoneByIdQueryVariables = Exact<{
 }>;
 
 
-export type ZoneByIdQuery = { __typename?: 'Query', zone: { __typename?: 'Zone', id: string, name: string } };
+export type ZoneByIdQuery = { __typename?: 'Query', zone: { __typename?: 'Zone', id: string, name: string, controller: { __typename?: 'MicroController', id: string, name: string, online: boolean } } };
 
 export type ZoneListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -328,6 +328,11 @@ export const ZoneByIdDocument = gql`
   zone(id: $id) {
     id
     name
+    controller {
+      id
+      name
+      online
+    }
   }
 }
     `;
