@@ -22,4 +22,7 @@ export class Solenoid {
 
   @Field({ description: 'Describes if the solenoid is open or closed or not' })
   open: boolean;
+
+  @Field()
+  name: string;
 }

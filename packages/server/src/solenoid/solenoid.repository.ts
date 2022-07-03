@@ -14,6 +14,7 @@ export class SolenoidRepository {
     solenoid.open = dbRow.open;
     solenoid.controlMode = dbRow.control_mode;
     solenoid.zoneId = dbRow.zone_id;
+    solenoid.name = dbRow.name;
 
     return solenoid;
   }

@@ -85,6 +85,7 @@ type Solenoid {
 
   """Describes if the solenoid is open or closed or not"""
   open: Boolean!
+  name: String!
 }
 
 enum SolenoidControlMode {
