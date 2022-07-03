@@ -53,7 +53,7 @@ model solenoid {
 
 model zone {
   id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name           String?          @db.VarChar(50)
+  name           String           @default("DEFAULT ZONE NAME") @db.VarChar(50)
   controller_id  String?          @db.Uuid
   controller     controller?      @relation(fields: [controller_id], references: [id], onUpdate: NoAction)
   irrigation_job irrigation_job[]

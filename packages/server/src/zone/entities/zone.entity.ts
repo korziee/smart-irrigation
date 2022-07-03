@@ -12,7 +12,6 @@ export class Zone {
 
   @Field({
     description: 'Friendly name of the zone',
-    nullable: true,
   })
-  name?: string;
+  name: string;
 }

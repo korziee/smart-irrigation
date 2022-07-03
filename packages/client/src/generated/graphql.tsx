@@ -147,6 +147,7 @@ export type Solenoid = {
   controlMode: SolenoidControlMode;
   /** ID of the Solenoid */
   id: Scalars['ID'];
+  name: Scalars['String'];
   /** Describes if the solenoid is open or closed or not */
   open: Scalars['Boolean'];
   /** Zone ID for which this solenoid resides */
@@ -193,7 +194,7 @@ export type Zone = {
   /** Irrigation jobs for a given zone */
   irrigationJobs: Array<IrrigationJob>;
   /** Friendly name of the zone */
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
   sensors: Array<Sensor>;
   solenoids: Array<Solenoid>;
 };
@@ -220,7 +221,7 @@ export type ZoneIrrigationListItem = {
 export type ZoneControllerStatusQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ZoneControllerStatusQuery = { __typename?: 'Query', zones: Array<{ __typename?: 'Zone', id: string, name?: string | null, controller: { __typename?: 'MicroController', id: string, lastBoot?: any | null, online: boolean, ipAddress?: string | null } }> };
+export type ZoneControllerStatusQuery = { __typename?: 'Query', zones: Array<{ __typename?: 'Zone', id: string, name: string, controller: { __typename?: 'MicroController', id: string, lastBoot?: any | null, online: boolean, ipAddress?: string | null } }> };
 
 export type IrrigationSummaryQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -232,12 +233,12 @@ export type ZoneByIdQueryVariables = Exact<{
 }>;
 
 
-export type ZoneByIdQuery = { __typename?: 'Query', zone: { __typename?: 'Zone', id: string, name?: string | null } };
+export type ZoneByIdQuery = { __typename?: 'Query', zone: { __typename?: 'Zone', id: string, name: string } };
 
 export type ZoneListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ZoneListQuery = { __typename?: 'Query', zones: Array<{ __typename?: 'Zone', id: string, name?: string | null }> };
+export type ZoneListQuery = { __typename?: 'Query', zones: Array<{ __typename?: 'Zone', id: string, name: string }> };
 
 
 export const ZoneControllerStatusDocument = gql`

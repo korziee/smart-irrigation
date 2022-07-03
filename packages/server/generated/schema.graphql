@@ -102,7 +102,7 @@ type Zone {
   controllerId: ID!
 
   """Friendly name of the zone"""
-  name: String
+  name: String!
   sensors: [Sensor!]!
   solenoids: [Solenoid!]!
   controller: MicroController!
