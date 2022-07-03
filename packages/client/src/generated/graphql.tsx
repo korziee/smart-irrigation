@@ -233,7 +233,7 @@ export type ZoneByIdQueryVariables = Exact<{
 }>;
 
 
-export type ZoneByIdQuery = { __typename?: 'Query', zone: { __typename?: 'Zone', id: string, name: string, controller: { __typename?: 'MicroController', id: string, name: string, online: boolean }, solenoids: Array<{ __typename?: 'Solenoid', id: string, controlMode: SolenoidControlMode, open: boolean, name: string }> } };
+export type ZoneByIdQuery = { __typename?: 'Query', zone: { __typename?: 'Zone', id: string, name: string, controller: { __typename?: 'MicroController', id: string, name: string, online: boolean }, solenoids: Array<{ __typename?: 'Solenoid', id: string, controlMode: SolenoidControlMode, open: boolean, name: string }>, sensors: Array<{ __typename?: 'Sensor', id: string, type: SensorType, zoneId: string, readings?: Array<{ __typename?: 'SensorReading', id: string, createdAt: any, reading: number, sensorId: string }> | null }> } };
 
 export type UpdateSolenoidMutationVariables = Exact<{
   input: UpdateSolenoidFromClientInput;
@@ -345,6 +345,17 @@ export const ZoneByIdDocument = gql`
       controlMode
       open
       name
+    }
+    sensors {
+      id
+      type
+      zoneId
+      readings(take: 100) {
+        id
+        createdAt
+        reading
+        sensorId
+      }
     }
   }
 }

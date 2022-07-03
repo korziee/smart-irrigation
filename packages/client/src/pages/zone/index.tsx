@@ -11,6 +11,7 @@ import { PageTemplate } from "../../components";
 import { useSetTitle } from "../../contexts/navbar-title";
 import { ControllerCard } from "./components/controller-card";
 import { SolenoidCard } from "./components/solenoid-card";
+import { MoistureLevelsCard } from "./components/moisture-levels-card";
 
 export const GQL_ZONE = gql`
   query ZoneById($id: ID!) {
@@ -27,6 +28,17 @@ export const GQL_ZONE = gql`
         controlMode
         open
         name
+      }
+      sensors {
+        id
+        type
+        zoneId
+        readings(take: 100) {
+          id
+          createdAt
+          reading
+          sensorId
+        }
       }
     }
   }
@@ -57,10 +69,10 @@ export const Zone: React.FC<RouteComponentProps> = () => {
   if (loading || !data) {
     return null;
   }
-
   return (
     <PageTemplate>
       <ControllerCard {...data.zone.controller} />
+      <MoistureLevelsCard sensors={data.zone.sensors!} />
       {data.zone.solenoids.map(({ controlMode, id, open, name }) => {
         return (
           <SolenoidCard

@@ -30,7 +30,7 @@ export const Zones: React.FC<RouteComponentProps> = () => {
           </Typography>
           <Box display="flex" flexDirection={"row"} alignItems="flex-start">
             {data.zones.map((zone) => (
-              <Link to={`/zones/${zone.id}`}>
+              <Link key={zone.id} to={`/zones/${zone.id}`}>
                 <Button
                   variant="contained"
                   sx={{
