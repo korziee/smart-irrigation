@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useLocation } from "@reach/router";
 import { Box } from "@mui/system";
 import HomeIcon from "@mui/icons-material/Home";
@@ -6,15 +6,41 @@ import { Typography, useTheme } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { routes } from "../routes";
+import { NavBarContext } from "../contexts/navbar-title";
 
 const LINK_CENTER_STYLES = {
   display: "flex",
 };
 
-export const NavBar: React.FC = () => {
+function useRouteBreadcrumbs(): string[] {
   const location = useLocation();
+
+  const paths = location.pathname.split("/");
+
+  const parentPage = Object.values(routes).find(({ path }) => {
+    if (path === location.pathname) {
+      return true;
+    }
+
+    if (path === `/${paths[1]}`) {
+      return true;
+    }
+
+    return false;
+  });
+
+  if (!parentPage) {
+    return ["/", "?"];
+  }
+
+  return ["/", parentPage.name];
+}
+
+export const NavBar: React.FC = () => {
   const theme = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const crumbs = useRouteBreadcrumbs();
+  const { title } = useContext(NavBarContext);
 
   return (
     <Box
@@ -42,7 +68,35 @@ export const NavBar: React.FC = () => {
             <Link to={routes.home.path} style={LINK_CENTER_STYLES}>
               <HomeIcon />
             </Link>
-            <Typography
+            {crumbs.map((crumb, index) => (
+              <Typography
+                key={`${index}-${crumb}`}
+                sx={{
+                  mx: 0.5,
+                }}
+              >
+                {crumb}
+              </Typography>
+            ))}
+            {title && (
+              <>
+                <Typography
+                  sx={{
+                    mx: 0.5,
+                  }}
+                >
+                  /
+                </Typography>
+                <Typography
+                  sx={{
+                    mx: 0.5,
+                  }}
+                >
+                  {title}
+                </Typography>
+              </>
+            )}
+            {/* <Typography
               sx={{
                 mx: 0.5,
               }}
@@ -61,7 +115,7 @@ export const NavBar: React.FC = () => {
 
                 return false;
               })?.name || "?"}
-            </Typography>
+            </Typography> */}
           </Box>
           {menuOpen ? (
             <Box sx={{ position: "relative" }}>

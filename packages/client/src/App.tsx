@@ -4,6 +4,7 @@ import { ThemeProvider } from "@mui/system";
 import { RouteComponentProps, Router } from "@reach/router";
 import React from "react";
 import { NavBar } from "./components/nav-bar";
+import { NavBarProvider } from "./contexts/navbar-title";
 import { Home } from "./pages/home";
 import { Zone } from "./pages/zone";
 import { Zones } from "./pages/zones";
@@ -40,13 +41,15 @@ const App: React.FC<RouteComponentProps> = ({ children }) => {
 const Main: React.FC = ({ children }) => (
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <Router>
-      <App path="/">
-        <Home path="/" />
-        <Zones path="/zones" />
-        <Zone path="/zones/:zoneId" />
-      </App>
-    </Router>
+    <NavBarProvider>
+      <Router>
+        <App path="/">
+          <Home path="/" />
+          <Zones path="/zones" />
+          <Zone path="/zones/:zoneId" />
+        </App>
+      </Router>
+    </NavBarProvider>
   </ThemeProvider>
 );
 
