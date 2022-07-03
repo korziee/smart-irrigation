@@ -233,7 +233,14 @@ export type ZoneByIdQueryVariables = Exact<{
 }>;
 
 
-export type ZoneByIdQuery = { __typename?: 'Query', zone: { __typename?: 'Zone', id: string, name: string, controller: { __typename?: 'MicroController', id: string, name: string, online: boolean } } };
+export type ZoneByIdQuery = { __typename?: 'Query', zone: { __typename?: 'Zone', id: string, name: string, controller: { __typename?: 'MicroController', id: string, name: string, online: boolean }, solenoids: Array<{ __typename?: 'Solenoid', id: string, controlMode: SolenoidControlMode, open: boolean, name: string }> } };
+
+export type UpdateSolenoidMutationVariables = Exact<{
+  input: UpdateSolenoidFromClientInput;
+}>;
+
+
+export type UpdateSolenoidMutation = { __typename?: 'Mutation', updateSolenoidFromClient: { __typename?: 'Solenoid', id: string, controlMode: SolenoidControlMode, open: boolean, name: string } };
 
 export type ZoneListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -333,6 +340,12 @@ export const ZoneByIdDocument = gql`
       name
       online
     }
+    solenoids {
+      id
+      controlMode
+      open
+      name
+    }
   }
 }
     `;
@@ -364,6 +377,42 @@ export function useZoneByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Z
 export type ZoneByIdQueryHookResult = ReturnType<typeof useZoneByIdQuery>;
 export type ZoneByIdLazyQueryHookResult = ReturnType<typeof useZoneByIdLazyQuery>;
 export type ZoneByIdQueryResult = Apollo.QueryResult<ZoneByIdQuery, ZoneByIdQueryVariables>;
+export const UpdateSolenoidDocument = gql`
+    mutation UpdateSolenoid($input: UpdateSolenoidFromClientInput!) {
+  updateSolenoidFromClient(updateSolenoidFromClientInput: $input) {
+    id
+    controlMode
+    open
+    name
+  }
+}
+    `;
+export type UpdateSolenoidMutationFn = Apollo.MutationFunction<UpdateSolenoidMutation, UpdateSolenoidMutationVariables>;
+
+/**
+ * __useUpdateSolenoidMutation__
+ *
+ * To run a mutation, you first call `useUpdateSolenoidMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSolenoidMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSolenoidMutation, { data, loading, error }] = useUpdateSolenoidMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateSolenoidMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSolenoidMutation, UpdateSolenoidMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSolenoidMutation, UpdateSolenoidMutationVariables>(UpdateSolenoidDocument, options);
+      }
+export type UpdateSolenoidMutationHookResult = ReturnType<typeof useUpdateSolenoidMutation>;
+export type UpdateSolenoidMutationResult = Apollo.MutationResult<UpdateSolenoidMutation>;
+export type UpdateSolenoidMutationOptions = Apollo.BaseMutationOptions<UpdateSolenoidMutation, UpdateSolenoidMutationVariables>;
 export const ZoneListDocument = gql`
     query ZoneList {
   zones {

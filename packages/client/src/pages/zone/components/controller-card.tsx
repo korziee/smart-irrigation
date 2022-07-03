@@ -16,24 +16,26 @@ export const ControllerCard: React.FC<ControllerCardProps> = ({
   online,
 }) => {
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Controller
-        </Typography>
-        <Box display="flex" flexDirection="row" my={1}>
-          <LocalOfferIcon />
-          <Typography ml={1}>{name}</Typography>
-        </Box>
-        <Box display="flex" flexDirection="row" my={1}>
-          <FingerprintIcon />
-          <Typography ml={1}>{id}</Typography>
-        </Box>
-        <Box display="flex" flexDirection="row" my={1}>
-          <TrafficIcon color={online ? "success" : "warning"} />
-          <Typography ml={1}>{online ? "Online" : "Offline"}</Typography>
-        </Box>
-      </CardContent>
-    </Card>
+    <Box mb={2}>
+      <Card>
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            Controller
+          </Typography>
+          <Box display="flex" flexDirection="row" my={1}>
+            <LocalOfferIcon />
+            <Typography ml={1}>{name}</Typography>
+          </Box>
+          <Box display="flex" flexDirection="row" my={1}>
+            <FingerprintIcon />
+            <Typography ml={1}>{id}</Typography>
+          </Box>
+          <Box display="flex" flexDirection="row" my={1}>
+            <TrafficIcon color={online ? "success" : "warning"} />
+            <Typography ml={1}>{online ? "Online" : "Offline"}</Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
