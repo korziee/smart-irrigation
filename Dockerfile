@@ -12,6 +12,7 @@ ENV NODE_ENV production
 COPY package.json yarn.lock ./
 COPY .yarn ./.yarn/
 COPY .yarnrc.yml ./
+COPY tsconfig.json ./
 
 COPY packages/server/package.json packages/server/package.json
 COPY packages/prisma/ packages/prisma/
@@ -21,10 +22,10 @@ RUN yarn workspaces focus @smart-irrigation/prisma @smart-irrigation/server
 
 COPY packages/server packages/server
 
-# # Creates a "dist" folder with the production build
+# Creates a "dist" folder with the production build
 RUN yarn workspace @smart-irrigation/server build
 
 WORKDIR /usr/src/app/packages/server
 
-# # Start the server using the production build
-CMD [ "node", "lib/main.js" ]
+# Start the server using the production build
+CMD [ "./start.sh" ]
