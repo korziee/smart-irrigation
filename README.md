@@ -28,3 +28,7 @@ Holds the Prisma ORM configuration and generated types.
 
 Run `yarn start:dev` to start both the client and server
 Run `yarn start:micro-controller` to start the LFS builder and remote http-server used by the MCUs for OTA LFS updates.
+
+# Deploying (CapRover)
+
+You will need to have `caprover` CLI installed and be logged into the caprover instance.
