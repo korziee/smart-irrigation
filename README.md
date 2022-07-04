@@ -32,3 +32,11 @@ Run `yarn start:micro-controller` to start the LFS builder and remote http-serve
 # Deploying (CapRover)
 
 You will need to have `caprover` CLI installed and be logged into the caprover instance.
+
+Run `yarn deploy:server` to begin the deployment
+
+## Notes
+
+You will need to first check in your changes to `main`
+Caprover will pull the latest change, build the docker image based on `Dockerfile`, and then start the container which runs `start.sh` (migrates + starts nest app)
+There is a port mapping in caprover to map port 3000 to 8081 so that the FE can consume it
