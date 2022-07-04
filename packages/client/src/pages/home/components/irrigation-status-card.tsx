@@ -18,6 +18,10 @@ export const GQL_IRRIGATION_SUMMARY = gql`
         zoneId
         name
       }
+      client {
+        zoneId
+        name
+      }
     }
   }
 `;
@@ -44,6 +48,9 @@ export const IrrigationStatusCard: React.FC = () => {
           <Box flex={1}>
             <Typography fontWeight="medium">Physical</Typography>
           </Box>
+          <Box flex={1}>
+            <Typography fontWeight="medium">Manually</Typography>
+          </Box>
         </Box>
         <Divider light />
         <Box display="flex" flexDirection="row" mt={2}>
@@ -61,6 +68,15 @@ export const IrrigationStatusCard: React.FC = () => {
               <Typography fontStyle={"italic"}>None</Typography>
             ) : (
               data.irrigationSummary.physical.map((zone) => {
+                return <Typography key={zone.zoneId}>{zone.name}</Typography>;
+              })
+            )}
+          </Box>
+          <Box flex={1}>
+            {data.irrigationSummary.client.length === 0 ? (
+              <Typography fontStyle={"italic"}>None</Typography>
+            ) : (
+              data.irrigationSummary.client.map((zone) => {
                 return <Typography key={zone.zoneId}>{zone.name}</Typography>;
               })
             )}

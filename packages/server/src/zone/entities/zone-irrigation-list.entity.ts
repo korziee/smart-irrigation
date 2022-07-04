@@ -16,4 +16,7 @@ export class ZoneIrrigationList {
 
   @Field(() => [ZoneIrrigationListItem])
   smart: ZoneIrrigationListItem[];
+
+  @Field(() => [ZoneIrrigationListItem])
+  client: ZoneIrrigationListItem[];
 }

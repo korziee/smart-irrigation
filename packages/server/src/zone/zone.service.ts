@@ -170,6 +170,7 @@ export class ZoneService {
   public async getIrrigationSummary(): Promise<ZoneIrrigationList> {
     const smart: ZoneIrrigationListItem[] = [];
     const physical: ZoneIrrigationListItem[] = [];
+    const client: ZoneIrrigationListItem[] = [];
 
     const solenoids = await this.solenoidService.findMany();
 
@@ -183,18 +184,17 @@ export class ZoneService {
         name: '',
       };
 
-      if (
-        solenoid.controlMode === 'physical' ||
-        solenoid.controlMode === 'client'
-      ) {
+      if (solenoid.controlMode === 'physical') {
         physical.push(zone);
+      } else if (solenoid.controlMode === 'client') {
+        client.push(zone);
       } else {
         smart.push(zone);
       }
     });
 
     const zonesToFetch = new Set(
-      [...smart, ...physical].map(({ zoneId }) => zoneId),
+      [...smart, ...physical, ...client].map(({ zoneId }) => zoneId),
     );
 
     const zones = await this.repository.findMany({
@@ -213,6 +213,12 @@ export class ZoneService {
         };
       }),
       physical: physical.map(({ zoneId }) => {
+        return {
+          zoneId,
+          name: zones.find((zone) => zone.id === zoneId).name,
+        };
+      }),
+      client: client.map(({ zoneId }) => {
         return {
           zoneId,
           name: zones.find((zone) => zone.id === zoneId).name,

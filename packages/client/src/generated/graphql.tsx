@@ -208,6 +208,7 @@ export type ZoneIrrigationJobsArgs = {
 
 export type ZoneIrrigationList = {
   __typename?: 'ZoneIrrigationList';
+  client: Array<ZoneIrrigationListItem>;
   physical: Array<ZoneIrrigationListItem>;
   smart: Array<ZoneIrrigationListItem>;
 };
@@ -226,7 +227,7 @@ export type ZoneControllerStatusQuery = { __typename?: 'Query', zones: Array<{ _
 export type IrrigationSummaryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type IrrigationSummaryQuery = { __typename?: 'Query', irrigationSummary: { __typename?: 'ZoneIrrigationList', smart: Array<{ __typename?: 'ZoneIrrigationListItem', zoneId: string, name: string }>, physical: Array<{ __typename?: 'ZoneIrrigationListItem', zoneId: string, name: string }> } };
+export type IrrigationSummaryQuery = { __typename?: 'Query', irrigationSummary: { __typename?: 'ZoneIrrigationList', smart: Array<{ __typename?: 'ZoneIrrigationListItem', zoneId: string, name: string }>, physical: Array<{ __typename?: 'ZoneIrrigationListItem', zoneId: string, name: string }>, client: Array<{ __typename?: 'ZoneIrrigationListItem', zoneId: string, name: string }> } };
 
 export type ZoneByIdQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -297,6 +298,10 @@ export const IrrigationSummaryDocument = gql`
       name
     }
     physical {
+      zoneId
+      name
+    }
+    client {
       zoneId
       name
     }
