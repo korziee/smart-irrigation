@@ -11,7 +11,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 const client = new ApolloClient({
-  uri: "http://localhost:3000/graphql",
+  uri: "http://smart-irrigation-server.caproverinstance.local/graphql",
   cache: new InMemoryCache(),
   connectToDevTools: true,
 });
