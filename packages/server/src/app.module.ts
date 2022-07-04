@@ -16,6 +16,9 @@ import { ConfigModule } from '@nestjs/config';
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'generated/schema.graphql'),
       sortSchema: false,
+      // easier to play around with the API when its deployed.
+      playground: true,
+      introspection: true,
     }),
     ConfigModule.forRoot({
       isGlobal: true,
