@@ -2,6 +2,9 @@
   "name": "@smart-irrigation/server",
   "packageManager": "yarn@3.1.1",
   "main": "src/main",
+  "engines": {
+    "node": ">= 16 <17"
+  },
   "scripts": {
     "postinstall": "yarn workspace @smart-irrigation/prisma db:generate",
     "codegen": "yarn graphql-codegen && yarn workspace @smart-irrigation/types tsc",
@@ -9,8 +12,8 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "migrate:create": "node-pg-migrate create -j ts",
-    "migrate:up": "node-pg-migrate up --tsconfig=./tsconfig.json",
-    "migrate:down": "node-pg-migrate down --tsconfig=./tsconfig.json",
+    "migrate:up": "DATABASE_URL=$(cat .env | grep DATABASE_URL | awk -F '\"' '{print $2}') node-pg-migrate up --tsconfig=./tsconfig.json",
+    "migrate:down": "DATABASE_URL=$(cat .env | grep DATABASE_URL | awk -F '\"' '{print $2}') node-pg-migrate down --tsconfig=./tsconfig.json",
     "seed": "ts-node seeds/index.ts",
     "start": "yarn nest start",
     "start:dev": "yarn nest start --watch",
@@ -54,7 +57,7 @@
     "apollo-server-express": "^3.6.3",
     "date-fns": "^2.28.0",
     "graphql": "^15",
-    "node-pg-migrate": "benkroeger/node-pg-migrate",
+    "node-pg-migrate": "^6.2.2",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

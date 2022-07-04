@@ -3972,7 +3972,7 @@ __metadata:
     graphql: ^15
     jest: ^27.5.1
     jest-mock-extended: ^2.0.4
-    node-pg-migrate: benkroeger/node-pg-migrate
+    node-pg-migrate: ^6.2.2
     pg: ^8.7.3
     prettier: ^2.5.1
     reflect-metadata: ^0.1.13
@@ -13334,9 +13334,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-node-pg-migrate@benkroeger/node-pg-migrate:
-  version: 6.2.1
-  resolution: "node-pg-migrate@https://github.com/benkroeger/node-pg-migrate.git#commit=0f8321caadcde61454b1d1031ed697b1e80d0905"
+"node-pg-migrate@npm:^6.2.2":
+  version: 6.2.2
+  resolution: "node-pg-migrate@npm:6.2.2"
   dependencies:
     "@types/pg": ^8.0.0
     decamelize: ^5.0.0
@@ -13346,7 +13346,7 @@ node-pg-migrate@benkroeger/node-pg-migrate:
     pg: ">=4.3.0 <9.0.0"
   bin:
     node-pg-migrate: bin/node-pg-migrate
-  checksum: 24c51c134fe5d5a37e5ace48f357a29792ec972a2ddc3bfe9e36ab7d2bcedfab74b7c116efdfb083f261e12fcdb759084a39f5e2cd4670f1f31e029939d719b1
+  checksum: 219eb20fb31aede2e04d7091c229421be6eb18a399e84f00c7a72b14a03e2111527f3e724a4765a8dd962d97d71b610af0a345a6e9edb5b5909b51ed41a777ab
   languageName: node
   linkType: hard
 
