@@ -1,5 +1,5 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
+import { Box } from "@mui/material";
 import { RouteComponentProps } from "@reach/router";
 import { IrrigationStatusCard, ControllerStatusCard } from "./components";
 

@@ -1,9 +1,5 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import { Divider } from "@mui/material";
+import { Box, Card, CardContent, Typography, Divider } from "@mui/material";
 import { gql } from "@apollo/client";
 import { useIrrigationSummaryQuery } from "../../../generated/graphql";
 

@@ -1,5 +1,4 @@
-import { CssBaseline } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
+import { CssBaseline, createTheme } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
 import { RouteComponentProps, Router } from "@reach/router";
 import React from "react";
