@@ -37,14 +37,24 @@ async function watcher() {
 
     // build LFS image using docker
     exec(
-      "docker run --rm -e IMAGE_NAME=smart_irrigation -v /Users/koryporter/nodemcu-firmware:/opt/nodemcu-firmware -v /Users/koryporter/dev/smart-irrigation/micro-controller/app:/opt/lua marcelstoer/nodemcu-build lfs-image lfs-files.lst",
+      "docker run --rm -e IMAGE_NAME=smart_irrigation -v /Users/koryporter/nodemcu-firmware:/opt/nodemcu-firmware -v /Users/koryporter/dev-personal/smart-irrigation/micro-controller/app:/opt/lua marcelstoer/nodemcu-build lfs-image lfs-files.lst",
       {
         encoding: "utf-8",
       },
       (err, stdout, stderr) => {
         if (err || stderr) {
-          console.error("Something went wrong when creating LFS image");
-          return;
+          const error = err ?? stderr;
+          if (
+            !error
+              .toString()
+              .includes(
+                `The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested`
+              )
+          ) {
+            console.error("Something went wrong when creating LFS image");
+            console.error(err, stderr);
+            return;
+          }
         }
         console.log(stdout);
         console.log("Finished");

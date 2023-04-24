@@ -23,3 +23,14 @@ Right now, it takes ~32 seconds to reload an LFS image because it needs to resta
 This could be improved by a polling solution, potentially using the `If-Modified-Since` header to only get a fresh LFS image, and in that case, it will reload the LFS image and then restart.
 The tricky part with that will be around how memory is managed, because right now, when the main.lua file is loaded and the services are started, the heap is reduced, and there is not enough memory
 available to reload the LFS image. Which is why there is currently a callback from the `ota_lfs_loader.lua` file to begin the program only when we are sure the LFS image does not need to be reloaded.
+
+# FAQs
+
+## How to modify config (variables.lua)
+
+Use the `nodemcu-tool` cli to pull the current config, make the changes, upload new file, restart micro-controller
+
+1. `yarn nodemcu-tool download variables.lua`
+2. ... make changes ...
+3. `yarn nodemcu-tool upload variables.lua`
+4. ... restart device ...

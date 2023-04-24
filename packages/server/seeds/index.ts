@@ -31,12 +31,12 @@ async function seedControllers(configId: string): Promise<string[]> {
       {
         id: ids[0],
         config_id: configId,
-        friendly_name: 'NodeMCU (no ip address)',
+        name: 'NodeMCU (no ip address)',
       },
       {
         id: ids[1],
         config_id: configId,
-        friendly_name: 'NodeMCU',
+        name: 'NodeMCU',
         ip_address: '192.168.1.2',
         online: true,
         last_boot: new Date(),

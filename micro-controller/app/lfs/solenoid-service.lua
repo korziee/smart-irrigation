@@ -143,7 +143,7 @@ local function handle_remote_solenoid_instruction(solenoid_id, open)
   -- otherwise, turn on solenoid, respond with { sucess: true}
   local solenoid_pin = variables.SOLENOIDS[solenoid_id]
 
-  -- mcp:setPin(mcp.GPA, solenoid_pin, state and mcp.HIGH or mcp.LOW)
+  -- todo: fire off message to api server
 end
 
 return {

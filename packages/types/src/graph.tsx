@@ -55,7 +55,7 @@ export type MicroController = {
   /** Describes if the micro controller is online and active */
   lastBoot?: Maybe<Scalars['DateTime']>;
   /** The micro controller's friendly name */
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
   /** Describes if the micro controller is online and active */
   online: Scalars['Boolean'];
 };
@@ -90,7 +90,14 @@ export type MutationUpdateSolenoidFromMicroControllerArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  irrigationSummary: ZoneIrrigationList;
+  zone: Zone;
   zones: Array<Zone>;
+};
+
+
+export type QueryZoneArgs = {
+  id: Scalars['ID'];
 };
 
 export type Sensor = {
@@ -137,6 +144,7 @@ export type Solenoid = {
   controlMode: SolenoidControlMode;
   /** ID of the Solenoid */
   id: Scalars['ID'];
+  name: Scalars['String'];
   /** Describes if the solenoid is open or closed or not */
   open: Scalars['Boolean'];
   /** Zone ID for which this solenoid resides */
@@ -183,7 +191,7 @@ export type Zone = {
   /** Irrigation jobs for a given zone */
   irrigationJobs: Array<IrrigationJob>;
   /** Friendly name of the zone */
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
   sensors: Array<Sensor>;
   solenoids: Array<Solenoid>;
 };
@@ -193,4 +201,17 @@ export type ZoneIrrigationJobsArgs = {
   active?: InputMaybe<Scalars['Boolean']>;
   skip?: InputMaybe<Scalars['Float']>;
   take: Scalars['Float'];
+};
+
+export type ZoneIrrigationList = {
+  __typename?: 'ZoneIrrigationList';
+  client: Array<ZoneIrrigationListItem>;
+  physical: Array<ZoneIrrigationListItem>;
+  smart: Array<ZoneIrrigationListItem>;
+};
+
+export type ZoneIrrigationListItem = {
+  __typename?: 'ZoneIrrigationListItem';
+  name: Scalars['String'];
+  zoneId: Scalars['ID'];
 };

@@ -152,57 +152,51 @@ export class IrrigationService {
     const fiveMinutesAgo = sub(new Date(), { minutes: 5 });
 
     for (const zone of inactiveZones) {
-      try {
-        const readings = await this.zoneService.getRecentSensorReadingsForZone(
+      const readings = await this.zoneService.getRecentSensorReadingsForZone(
+        zone.id,
+        {
+          // we fetch based on time rather than quantity as we know there will always be x events
+          // send every minute. The more the merrier as we'll take an average.
+          from: fiveMinutesAgo,
+        },
+      );
+
+      if (readings.length === 0) {
+        this.logger.warn(
+          `No readings in the last 5 minutes for zone: ${zone.id}`,
+        );
+        continue;
+      }
+
+      const total = readings.reduce(
+        (prev, current) => prev + current.reading,
+        0,
+      );
+
+      const average = Math.round(total / readings.length);
+
+      const zoneMoistureLevel = this.mapSensorReadingToMoistureLevel(average);
+
+      if (['dry', 'dryish'].includes(zoneMoistureLevel)) {
+        this.logger.log(`Starting irrigation in zone with id: ${zone.id}`);
+
+        await this.zoneService.updateAllSolenoidsInZone(
           zone.id,
+          'irrigation-service',
+          'auto',
+          true,
+        );
+
+        await this.repository.createManyJobs([
           {
-            // we fetch based on time rather than quantity as we know there will always be x events
-            // send every minute. The more the merrier as we'll take an average.
-            from: fiveMinutesAgo,
+            zoneId: zone.id,
+            active: true,
+            start: new Date(),
+            end: add(new Date(), {
+              minutes: 15,
+            }),
           },
-        );
-
-        if (readings.length === 0) {
-          this.logger.warn(
-            `No readings in the last 5 minutes for zone: ${zone.id}`,
-          );
-          continue;
-        }
-
-        const total = readings.reduce(
-          (prev, current) => prev + current.reading,
-          0,
-        );
-
-        const average = Math.round(total / readings.length);
-
-        const zoneMoistureLevel = this.mapSensorReadingToMoistureLevel(average);
-
-        if (['dry', 'dryish'].includes(zoneMoistureLevel)) {
-          this.logger.log(`Starting irrigation in zone with id: ${zone.id}`);
-
-          await this.zoneService.updateAllSolenoidsInZone(
-            zone.id,
-            'irrigation-service',
-            'auto',
-            true,
-          );
-          await this.repository.createManyJobs([
-            {
-              zoneId: zone.id,
-              active: true,
-              start: new Date(),
-              end: add(new Date(), {
-                minutes: 15,
-              }),
-            },
-          ]);
-        }
-      } catch (e) {
-        this.logger.error(
-          `An error occurred while checking if zone ${zone.id} needs irrigating`,
-          e,
-        );
+        ]);
       }
     }
   }

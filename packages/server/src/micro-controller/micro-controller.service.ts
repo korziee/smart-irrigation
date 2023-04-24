@@ -87,7 +87,14 @@ export class MicroControllerService {
       ),
     );
 
-    this.logger.log('MCU Response:', res);
+    this.logger.log('MCU Response:', {
+      status: res.status,
+      statusText: res.statusText,
+      headers: res.headers,
+      receivedData: res.data,
+      sentData: res.config.data,
+      url: res.config.url,
+    });
   }
 
   public async getControllerById(
