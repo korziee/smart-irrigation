@@ -10,6 +10,10 @@ local function get_handler_for_route(route)
     return handlers.post
   end
 
+  if route == "/update-solenoid" then
+    return handlers.solenoid_state_change_handler
+  end
+
   return handlers.default
 end
 
@@ -29,19 +33,28 @@ local function on_request(req, res)
     end
 
     if not chunk then
-      handler(data)
-      -- reply
-      local response = "Hello world from my custom http server, your message was: " .. data
+      local handler_response = handler(data)
+      local response = {}
 
-      -- send 200 OK
+      if handler_response then
+        response = handler_response
+      else
+        response = {
+          message = "Hello world from my custom http server, your message was: " .. data
+        }
+      end
+
+      local response_json_string = sjson.encode(response)
+
       res:send("HTTP/1.1 200 OK" .. "\r\n")
+      res:send("Content-Type: application/json" .. "\r\n")
       -- set content length (we could use Transfer-Encoding: chunked here, but this feels simpler as we know the response size upfront)
-      res:send("Content-Length: " .. string.len(response) .. "\r\n")
-      -- end headers
+      res:send("Content-Length: " .. string.len(response_json_string) .. "\r\n")
+      -- end headers (\r\n on empty line is term signal for headers)
       res:send("\r\n")
 
       -- send data
-      res:send(response)
+      res:send(response_json_string)
       res:finish()
     end
   end

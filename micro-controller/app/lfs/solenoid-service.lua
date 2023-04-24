@@ -137,13 +137,32 @@ end
 
 local function handle_remote_solenoid_instruction(solenoid_id, open)
   print("solenoid_state_change_handler called", solenoid_id, open)
+  -- todo (to support the physical switch to change solenoid)
   -- fetch current state of the GPB register
   -- if forced off, respond with { success: false, reason: "Solenoid forced off" }
   -- if forced on, respond with { success: false, reason: "Solenoid already forced-on" }
   -- otherwise, turn on solenoid, respond with { sucess: true}
-  local solenoid_pin = variables.SOLENOIDS[solenoid_id]
+  local solenoid = variables.SOLENOIDS[solenoid_id]
 
-  -- todo: fire off message to api server
+  if not solenoid then
+    print("solenoid not found")
+    return {
+      success = false,
+      message = "solenoid not found"
+    }
+  end
+
+  if open then
+    print("turning solenoid on")
+    mcp_instance:setPin(mcp_instance.GPA, solenoid.control_pin, mcp_instance.HIGH)
+  else
+    print("turning solenoid off")
+    mcp_instance:setPin(mcp_instance.GPA, solenoid.control_pin, mcp_instance.LOW)
+  end
+
+  return {
+    success = true
+  }
 end
 
 return {

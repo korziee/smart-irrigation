@@ -34,3 +34,7 @@ Use the `nodemcu-tool` cli to pull the current config, make the changes, upload 
 2. ... make changes ...
 3. `yarn nodemcu-tool upload variables.lua`
 4. ... restart device ...
+
+## Why isn't the solenoid turning on?
+
+Solenoid requires 7v to switch, so must be powered by external power - not from the 3v output on the NodeMCU.

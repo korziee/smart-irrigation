@@ -37,9 +37,7 @@ do
   local function solenoid_state_change_handler(request_data)
     -- { solenoidId: string, open: boolean }
     local json = sjson.decode(request_data)
-
-    -- TODO: test if this works
-    solenoid_service.handle_remote_solenoid_instruction(json.solenoidId, json.open)
+    return solenoid_service.handle_remote_solenoid_instruction(json.solenoidId, json.open)
   end
 
   handlers = {
