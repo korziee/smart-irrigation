@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { lastValueFrom } from 'rxjs';
-import { getIpv4AdressFromTransitionaryIpv6Address } from '../util/ip-address';
+import { getIpv4AddressFromTransitionaryIpv6Address } from '../util/ip-address';
 import { MicroController } from './entities/micro-controller.entity';
 import { MicroControllerRepository } from './micro-controller.repository';
 import { Message } from './types/Message';
@@ -46,10 +46,15 @@ export class MicroControllerService {
     controllerId: string,
     remoteAddress: string,
   ): Promise<MicroController> {
+    // The `remoteAddress` property on a socket seems to return a transitionary ipv6 address
+    const ipv4Address =
+      getIpv4AddressFromTransitionaryIpv6Address(remoteAddress);
+    this.logger.log(
+      `heartbeat received for controller with id: "${controllerId}" at ip: "${ipv4Address}"`,
+    );
     return this.repository.update(controllerId, {
       online: true,
-      // The `remoteAddress` property on a socket seems to return a transitionary ipv6 address
-      ip_address: getIpv4AdressFromTransitionaryIpv6Address(remoteAddress),
+      ip_address: ipv4Address,
       last_boot: new Date(),
     });
   }
@@ -65,7 +70,7 @@ export class MicroControllerService {
       route: this.messageTypeRouteMap[message.type],
     });
 
-    if (this.config.get('ENV') === 'LOCAL') {
+    if (this.config.get('SKIP_CONTROLLER_SEND') === 'true') {
       this.logger.log(
         "Skipping HTTP request to controller as we're running in a local environment",
       );

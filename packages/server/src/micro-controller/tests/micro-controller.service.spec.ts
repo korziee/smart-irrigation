@@ -41,11 +41,11 @@ describe('MicroControllerService', () => {
     it('should update the online status of a micro controller', async () => {
       const now = new Date();
       jest.useFakeTimers().setSystemTime(now.getTime());
-      await service.handleControllerHeartbeat('controller-1', '1.1.1.');
+      await service.handleControllerHeartbeat('controller-1', '1.1.1.1');
 
       expect(repository.update).toHaveBeenCalledWith('controller-1', {
         online: true,
-        ip_address: '1.1.1.',
+        ip_address: '1.1.1.1',
         last_boot: now,
       });
     });
