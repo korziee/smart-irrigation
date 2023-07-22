@@ -19,6 +19,10 @@ import { ConfigModule } from '@nestjs/config';
       // easier to play around with the API when its deployed.
       playground: true,
       introspection: true,
+      formatError: (err) => {
+        console.error(err);
+        return err;
+      },
     }),
     ConfigModule.forRoot({
       isGlobal: true,

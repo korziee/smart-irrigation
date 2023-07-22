@@ -22,10 +22,10 @@ local function send_sensor_value_to_server(sensor_id, value)
     sjson.encode(body),
     function(code)
       if (code < 0) then
-        print("HTTP request failed")
+        print("HTTP request failed", code)
       else
         -- NOTE: uncomment this line for debugging.
-        print("HTTP Request Succeeded")
+        print("HTTP Request Succeeded", code)
       end
     end
   )
@@ -37,7 +37,8 @@ local function write_to_device(device_address, command)
   local writeAcknowledgement = i2c.address(variables.I2C_BUS_ID, device_address, i2c.TRANSMITTER)
 
   if not writeAcknowledgement then
-    print("No write I2C acknowledge received for sensor address = " .. device_address)
+    -- turn on to debug unconnected i2c
+    -- print("No write I2C acknowledge received for sensor address = " .. device_address)
     return nil
   end
 
@@ -72,18 +73,11 @@ local function read_from_device(device_address)
 end
 
 -- Returns a 0-255 OR nil value depending on the moisture level of the soil
--- or if there was an error with the i2c bus.
-local function get_sensor_value(sensor_id)
-  local sensor_address = variables.SENSOR_IDS[sensor_id]
-
-  -- turn LED on
-  write_to_device(sensor_address, OP_LED_ON)
-
-  -- read value
-  local value = read_from_device(sensor_address)
-
-  -- turn LED off
-  write_to_device(sensor_address, OP_LED_OFF)
+-- or nil if there was an error with the i2c bus.
+local function get_sensor_value(sensor_address)
+  write_to_device(sensor_address, OP_LED_ON) -- turn LED on
+  local value = read_from_device(sensor_address) -- read value
+  write_to_device(sensor_address, OP_LED_OFF) -- turn LED off
 
   return value
 end
@@ -96,9 +90,13 @@ local function start_watching_sensors(interval)
     tmr.ALARM_AUTO,
     function()
       for sensor_id in pairs(variables.SENSOR_IDS) do
-        local sensor_value = get_sensor_value(sensor_id)
-        print("SENSOR VALUE", sensor_value)
-        send_sensor_value_to_server(sensor_id, sensor_value)
+        local sensor_address = variables.SENSOR_IDS[sensor_id]
+        local sensor_value = get_sensor_value(sensor_address)
+
+        if sensor_value ~= nil then
+          print(string.format("%s -> sensor value = %d", sensor_id, sensor_value))
+          send_sensor_value_to_server(sensor_id, sensor_value)
+        end
       end
     end
   )
