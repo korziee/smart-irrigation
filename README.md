@@ -35,6 +35,12 @@ You will need to have `caprover` CLI installed and be logged into the caprover i
 
 Run `yarn deploy:server` to begin the deployment
 
+# Connecting to db
+
+The db is running in caprover, and port 5050 has been mapped to port 5432 internally, so to connect to it run:
+
+`pgcli 'postgresql://postgres:$pw@192.168.1.253:5050/postgres'`
+
 ## Notes
 
 You will need to first check in your changes to `main`
