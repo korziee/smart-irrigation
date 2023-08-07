@@ -20,11 +20,10 @@ export class SolenoidRepository {
   }
 
   public async findById(id: string): Promise<Solenoid> {
-    const row = await this.prisma.solenoid.findUnique({
+    const row = await this.prisma.solenoid.findUniqueOrThrow({
       where: {
         id,
       },
-      rejectOnNotFound: true,
     });
 
     return this.mapDbRowToSolenoid(row);
