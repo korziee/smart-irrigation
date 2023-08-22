@@ -26,7 +26,7 @@ return function(controller_id, callback)
         print("HTTP request failed")
         callback(nil)
       else
-        -- print(code, data)
+        print(code, data)
         local json = sjson.decode(data)
         callback(json.data.controllerHeartbeat.config)
       end
