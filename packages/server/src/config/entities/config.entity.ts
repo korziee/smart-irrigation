@@ -1,6 +1,15 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 
 @ObjectType()
+export class DevMode {
+  @Field()
+  enabled: boolean;
+
+  @Field()
+  ipAddress?: string;
+}
+
+@ObjectType()
 export class Config {
   @Field(() => ID, { description: 'Config ID' })
   id: string;
@@ -12,10 +21,7 @@ export class Config {
   soilSensorUpdateIntervalMs: number;
 
   @Field()
-  devMode: boolean;
-
-  @Field()
-  devModeIpAddress: string;
+  devMode: DevMode;
 
   @Field({
     description:

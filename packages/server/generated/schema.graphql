@@ -30,14 +30,18 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type DevMode {
+  enabled: Boolean!
+  ipAddress: String!
+}
+
 type Config {
   """Config ID"""
   id: ID!
 
   """Describes how often the controller should send sensor updates"""
   soilSensorUpdateIntervalMs: Float!
-  devMode: Boolean!
-  devModeIpAddress: String!
+  devMode: DevMode!
 
   """Describes how often the controller should send sensor updates"""
   createdAt: DateTime!

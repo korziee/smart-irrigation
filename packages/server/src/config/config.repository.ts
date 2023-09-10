@@ -14,8 +14,10 @@ export class ConfigRepository {
     config.createdAt = dbRow.created_at;
     config.id = dbRow.id;
     config.soilSensorUpdateIntervalMs = dbRow.soil_sensor_update_interval_ms;
-    config.devMode = dbRow.dev_mode;
-    config.devModeIpAddress = dbRow.dev_mode_ip_address ?? '';
+    config.devMode = {
+      enabled: dbRow.dev_mode,
+      ipAddress: dbRow.dev_mode_ip_address ?? '',
+    };
 
     return config;
   }
