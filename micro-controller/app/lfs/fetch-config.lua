@@ -6,7 +6,11 @@ local shared = require("shared")
 --       "controllerHeartbeat": {
 --           "config": {
 --               "id": "c71be267-198c-48e3-8fe1-d0af93827e66",
---               "soilSensorUpdateIntervalMs": 5000
+--               "soilSensorUpdateIntervalMs": 5000,
+--               "devMode": {
+--                 "enabled": true
+--                 "ipAddress": "192.168.1.1"
+--               }
 --           }
 --       }
 --   }
@@ -15,7 +19,8 @@ local shared = require("shared")
 return function(controller_id, callback)
   local mutation =
     '{"query":"mutation {controllerHeartbeat(controllerHeartbeatInput: { id: \\"' ..
-    controller_id .. '\\"}) {  config {    id, soilSensorUpdateIntervalMs  }}}","variables":{}}'
+    controller_id ..
+      '\\"}) {  config {    id, soilSensorUpdateIntervalMs, devMode { enabled, ipAddress }  }}}","variables":{}}'
 
   http.post(
     shared.graphql_endpoint,

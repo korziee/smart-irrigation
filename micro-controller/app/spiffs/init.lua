@@ -15,9 +15,21 @@ function startup()
     return
   end
 
+  local ota_server_ip_address = ""
+
+  -- contents of ota_server_ip_address.txt file are set when config is loaded
+  -- if dev mode is true and ip address is set, it will be stored in this file
+  if file.open("ota_server_ip_address.txt", "r") then
+    -- read 16 bytes to cater for entire ipv4 address (192.xxx.xxx.xxx)
+    ota_server_ip_address = file.read(15)
+    file.close()
+  end
+
+  print("OTA SERVER IP ADDRESS" .. ota_server_ip_address)
+
   node.LFS.init_lfs()
   node.LFS.ota_lfs_loader(
-    variables.SERVER_IP,
+    ota_server_ip_address,
     variables.LUA_IMAGE_OTA_PATH,
     variables.LUA_IMAGE_NAME,
     8080,
