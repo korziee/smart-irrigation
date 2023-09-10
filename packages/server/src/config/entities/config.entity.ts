@@ -11,6 +11,12 @@ export class Config {
   })
   soilSensorUpdateIntervalMs: number;
 
+  @Field()
+  devMode: boolean;
+
+  @Field()
+  devModeIpAddress: string;
+
   @Field({
     description:
       'Describes how often the controller should send sensor updates',

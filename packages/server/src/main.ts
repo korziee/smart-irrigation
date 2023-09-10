@@ -11,8 +11,10 @@ async function bootstrap() {
 
   await app.listen(3000);
 
-  const irrigationService = app.get<IrrigationService>(IrrigationService);
-  await irrigationService.startSmartIrrigation();
+  // note: I have turned this off as I didn't want
+  // mains pressure cheap ebay solenoids sitting there 24/7
+  // const irrigationService = app.get<IrrigationService>(IrrigationService);
+  // await irrigationService.startSmartIrrigation();
 
   // const r = app.get<IrrigationRepository>(IrrigationRepository);
 

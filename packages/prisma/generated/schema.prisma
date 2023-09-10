@@ -12,6 +12,8 @@ model config {
   id                             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   soil_sensor_update_interval_ms Int
   created_at                     DateTime     @default(now()) @db.Timestamp(6)
+  dev_mode                       Boolean      @default(false)
+  dev_mode_ip_address            String?      @db.VarChar(15)
   controller                     controller[]
 }
 

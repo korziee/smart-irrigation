@@ -36,6 +36,8 @@ type Config {
 
   """Describes how often the controller should send sensor updates"""
   soilSensorUpdateIntervalMs: Float!
+  devMode: Boolean!
+  devModeIpAddress: String!
 
   """Describes how often the controller should send sensor updates"""
   createdAt: DateTime!

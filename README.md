@@ -4,6 +4,10 @@
 2. Yarn Install
 3. Run `yarn dlx @yarnpkg/sdks` to update your local yarn config with the editor tools
 
+# Local DB
+
+Run `docker start smart-irrigation` if you've already got the container running and it's stopped, otherwise run `docker run --name smart-irrigation -p 4001:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres` and `yarn seed:real`
+
 # Folders
 
 ## /micro-controller
