@@ -11,7 +11,8 @@ it is relevant to the root folder, i.e. in this instance it is app.
    - The http-server is a pretty basic file server used by the micro-controller to get the LFS image
    - The node script watches the micro-controller/app folder for changes
      - on change, this script re-compiles the LFS image using the nodemcu docker image
-2. Within the LFS image there is a file called `ota_lfs_loader.lua` which on restart, makes a GET request to the http-server and gets the LFS image
+2. There is a setting in the db for config, called `dev_mode` which needs to be set to true to enable OTA.
+3. Within the LFS image there is a file called `ota_lfs_loader.lua` which on restart, makes a GET request to the http-server and gets the LFS image
    - When it receives the image, it checks to see the last-modified header is the same as the previous request
      - if so, it continues the execution
      - otherwise, it writes the LFS image to disk, and then reloads the image (causing the MCU to restart). Upon restart, the whole process starts again, but this time it does not reload the image, instead it continues execution
@@ -38,3 +39,7 @@ Use the `nodemcu-tool` cli to pull the current config, make the changes, upload 
 ## Why isn't the solenoid turning on?
 
 Solenoid requires 7v to switch, so must be powered by external power - not from the 3v output on the NodeMCU.
+
+## Have troubles updating init.lua
+
+NFI but sometimes `nodemcu-tool` says it transferred and wrote all the bytes, but it occasionally turns out to be 0 bytes if you check the FS on the device using `nodemcu-tool fsinfo`. When this occurs, clear the `init.lua` file first using `nodemcu-tool remove init.lua`, and then run `nodemcu-tool upload app/spiffs/init.lua`.

@@ -25,18 +25,26 @@ function startup()
     file.close()
   end
 
-  print("OTA SERVER IP ADDRESS" .. ota_server_ip_address)
-
   node.LFS.init_lfs()
-  node.LFS.ota_lfs_loader(
-    ota_server_ip_address,
-    variables.LUA_IMAGE_OTA_PATH,
-    variables.LUA_IMAGE_NAME,
-    8080,
-    function()
-      node.LFS.main()
-    end
-  )
+
+  -- NFI why, but even if the file doesn't exist the result of file.open is non nil,
+  -- so it's returning a file descripter and trying to read 15 bytes of an empty file
+  -- is setting ota_server_ip_address to be nil, which causes runtime errors below
+  if ota_server_ip_address == nil then
+    print("OTA DISABLED")
+    node.LFS.main()
+  else
+    print("OTA SERVER IP ADDRESS" .. ota_server_ip_address)
+    node.LFS.ota_lfs_loader(
+      ota_server_ip_address,
+      variables.LUA_IMAGE_OTA_PATH,
+      variables.LUA_IMAGE_NAME,
+      8080,
+      function()
+        node.LFS.main()
+      end
+    )
+  end
 
   file.close("init.lua")
 end

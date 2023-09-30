@@ -25,6 +25,10 @@ local function start(config)
     end
   else
     print("dev mode is off")
+    if file.open("ota_server_ip_address.txt", "w+") then
+      print("clearing ota_server_ip_address.txt file")
+      file.close()
+    end
   end
 
   -- Gets the server ready for bi-directional communication

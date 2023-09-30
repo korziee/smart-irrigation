@@ -19,7 +19,7 @@ local n, total, size = 0, 0
 
 doRequest = function(socket, hostIP) -- luacheck: no unused
   if hostIP then
-    -- Using net over tls here, no reason for tls
+    -- Using net versestls here, no reason for tls
     local con = net.createConnection()
     -- Note that the current dev version can only accept uncompressed LFS images
     con:on(
@@ -42,6 +42,14 @@ doRequest = function(socket, hostIP) -- luacheck: no unused
         -- print(request)
         sck:send(request)
         sck:on("receive", firstRec)
+      end
+    )
+
+    con:on(
+      "disconnection",
+      function(sck, err)
+        print("error connecting to OTA server, code: ", err)
+        on_finished()
       end
     )
     con:connect(port, hostIP)
