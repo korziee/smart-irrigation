@@ -104,6 +104,62 @@ local function start_watching_sensors(interval)
   mytimer:start()
 end
 
+local function read_battery_voltage(interval)
+  battery_tmr = tmr.create()
+
+  battery_tmr:register(
+    interval,
+    tmr.ALARM_AUTO,
+    function()
+      res_one = 8130
+      res_two = 14920
+
+      -- NodeMCU saturates (gives 1024 reading) ADC at 3.13 volts instead of 3.3v
+      saturation_voltage = 3.13
+
+      adc_value = adc.read(0)
+
+      -- scale ADC reading to volts
+      vvd = (adc_value / 1024) * saturation_voltage
+
+      -- uses the voltage div formula to vind vs (voltage source)
+      vs = (vvd * (res_one + res_two)) / res_two
+
+      print(string.format("ADC reading = %d", adc_value))
+      print(string.format("Vvd = %f", vvd))
+      print(string.format("Vsource = %f", vs))
+
+      -- todo: send this to server
+      local body = {
+        query = "mutation CreateVoltageReading($input: ControllerVoltageReadingInput!) { controllerVoltageReading( controllerVoltageReadingInput: $input) }",
+        variables = {
+          input = {
+            controllerId = variables.CONTROLLER_ID,
+            volts = vs
+          }
+        }
+      }
+
+      http.post(
+        shared.graphql_endpoint,
+        "Content-Type: application/json\r\n",
+        sjson.encode(body),
+        function(code)
+          if (code < 0) then
+            print("create voltage reading failed", code)
+          else
+            -- NOTE: uncomment this line for debugging.
+            print("create voltage reading succeeded", code)
+          end
+        end
+      )
+    end
+  )
+
+  battery_tmr:start()
+end
+
 return {
-  start = start_watching_sensors
+  start = start_watching_sensors,
+  start_battery_watcher = read_battery_voltage
 }

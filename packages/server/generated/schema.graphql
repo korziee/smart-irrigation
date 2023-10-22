@@ -41,6 +41,9 @@ type Config {
 
   """Describes how often the controller should send sensor updates"""
   soilSensorUpdateIntervalMs: Float!
+
+  """Describes how often the controller should send battery updates"""
+  controllerBatteryVoltageUpdateIntervalMs: Float!
   devMode: DevMode!
 
   """Describes how often the controller should send sensor updates"""
@@ -153,6 +156,7 @@ type Query {
 
 type Mutation {
   controllerHeartbeat(controllerHeartbeatInput: ControllerHeartbeatInput!): MicroController!
+  controllerVoltageReading(controllerVoltageReadingInput: ControllerVoltageReadingInput!): Boolean!
   sensorReading(sensorReadingInput: SensorReadingInput!): SensorReading!
   updateSolenoidFromClient(updateSolenoidFromClientInput: UpdateSolenoidFromClientInput!): Solenoid!
   updateSolenoidFromMicroController(updateSolenoidFromMicroControllerInput: UpdateSolenoidFromMicroControllerInput!): Solenoid!
@@ -160,6 +164,11 @@ type Mutation {
 
 input ControllerHeartbeatInput {
   id: ID!
+}
+
+input ControllerVoltageReadingInput {
+  controllerId: ID!
+  volts: Float!
 }
 
 input SensorReadingInput {

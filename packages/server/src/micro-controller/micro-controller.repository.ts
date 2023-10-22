@@ -35,6 +35,15 @@ export class MicroControllerRepository {
     return this.mapDbRowToConfig(controller);
   }
 
+  public async writeVoltageReading(controllerId: string, reading: number) {
+    return this.prisma.controller_battery_reading.create({
+      data: {
+        controller_id: controllerId,
+        volts: reading,
+      },
+    });
+  }
+
   public async findById(controllerId: string): Promise<MicroController> {
     const controller = await this.prisma.controller.findUnique({
       where: { id: controllerId },

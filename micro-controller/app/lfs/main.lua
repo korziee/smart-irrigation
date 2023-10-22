@@ -7,6 +7,11 @@ local fetch_config = require("fetch-config")
 
 -- Setup i2c here because its used in both sensor and solenoid service
 i2c.setup(variables.I2C_BUS_ID, variables.I2C_SDA, variables.I2C_SCL, i2c.SLOW)
+if adc.force_init_mode(adc.INIT_ADC) then
+  -- need to force restart if the adc mode changes
+  node.restart()
+  return
+end
 
 local function start(config)
   if config.devMode.enabled == true then
@@ -34,6 +39,7 @@ local function start(config)
   -- Gets the server ready for bi-directional communication
   server.start()
   sensor_service.start(config.soilSensorUpdateIntervalMs)
+  sensor_service.start_battery_watcher(config.controllerBatteryVoltageUpdateIntervalMs)
   solenoid_service.start()
 end
 

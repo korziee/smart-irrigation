@@ -107,4 +107,8 @@ export class MicroControllerService {
   ): Promise<MicroController> {
     return this.repository.findById(controllerId);
   }
+
+  public async writeVoltageReading(controllerId: string, reading: number) {
+    return this.repository.writeVoltageReading(controllerId, reading);
+  }
 }

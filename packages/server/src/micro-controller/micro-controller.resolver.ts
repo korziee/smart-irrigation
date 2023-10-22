@@ -11,6 +11,7 @@ import { MicroController } from './entities/micro-controller.entity';
 import { ControllerHeartbeatInput } from './dto/controller-heartbeat.input';
 import { Config } from '../config/entities/config.entity';
 import { ConfigService } from '../config/config.service';
+import { ControllerVoltageReadingInput } from './dto/controller-voltage-reading.input';
 
 @Resolver(() => MicroController)
 export class MicroControllerResolver {
@@ -37,5 +38,17 @@ export class MicroControllerResolver {
       controllerHeartbeatInput.id,
       context.req.socket.remoteAddress as string,
     );
+  }
+
+  @Mutation(() => Boolean)
+  async controllerVoltageReading(
+    @Args('controllerVoltageReadingInput') input: ControllerVoltageReadingInput,
+  ) {
+    await this.microControllerService.writeVoltageReading(
+      input.controllerId,
+      input.volts,
+    );
+
+    return true;
   }
 }

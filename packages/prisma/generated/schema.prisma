@@ -9,23 +9,25 @@ datasource db {
 }
 
 model config {
-  id                             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  soil_sensor_update_interval_ms Int
-  created_at                     DateTime     @default(now()) @db.Timestamp(6)
-  dev_mode                       Boolean      @default(false)
-  dev_mode_ip_address            String?      @db.VarChar(15)
-  controller                     controller[]
+  id                                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  soil_sensor_update_interval_ms     Int
+  created_at                         DateTime     @default(now()) @db.Timestamp(6)
+  dev_mode                           Boolean      @default(false)
+  dev_mode_ip_address                String?      @db.VarChar(15)
+  battery_voltage_update_interval_ms Int          @default(60000)
+  controller                         controller[]
 }
 
 model controller {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @default("DEFAULT CONTROLLER NAME") @db.VarChar(255)
-  ip_address String?   @db.VarChar(15)
-  online     Boolean   @default(false)
-  last_boot  DateTime? @db.Timestamp(6)
-  config_id  String    @db.Uuid
-  config     config    @relation(fields: [config_id], references: [id], onUpdate: NoAction)
-  zone       zone[]
+  id                         String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                       String                       @default("DEFAULT CONTROLLER NAME") @db.VarChar(255)
+  ip_address                 String?                      @db.VarChar(15)
+  online                     Boolean                      @default(false)
+  last_boot                  DateTime?                    @db.Timestamp(6)
+  config_id                  String                       @db.Uuid
+  config                     config                       @relation(fields: [config_id], references: [id], onUpdate: NoAction)
+  controller_battery_reading controller_battery_reading[]
+  zone                       zone[]
 }
 
 model sensor {
@@ -76,6 +78,14 @@ model pgmigrations {
   id     Int      @id @default(autoincrement())
   name   String   @db.VarChar(255)
   run_on DateTime @db.Timestamp(6)
+}
+
+model controller_battery_reading {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  controller_id String     @db.Uuid
+  volts         Float
+  created_at    DateTime   @default(now()) @db.Timestamp(6)
+  controller    controller @relation(fields: [controller_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum sensor_type {

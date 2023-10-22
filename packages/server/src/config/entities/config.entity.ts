@@ -20,6 +20,12 @@ export class Config {
   })
   soilSensorUpdateIntervalMs: number;
 
+  @Field({
+    description:
+      'Describes how often the controller should send battery updates',
+  })
+  controllerBatteryVoltageUpdateIntervalMs: number;
+
   @Field()
   devMode: DevMode;
 
