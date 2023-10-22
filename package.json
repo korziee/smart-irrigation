@@ -11,7 +11,7 @@
   "scripts": {
     "start:dev": "yarn concurrently -n client,server \"yarn workspace @smart-irrigation/client run start \" \"yarn workspace @smart-irrigation/server run start:dev\"",
     "start:micro-controller": "yarn concurrently -n server,watcher \"http-server -p 8080\" \"yarn ts-node watch.ts\"",
-    "deploy:server": "caprover deploy -c captain-definition-server -a smart-irrigation-server"
+    "deploy:server": "caprover deploy -c captain-definition -a plant-pal-server"
   },
   "devDependencies": {
     "@types/eslint": "^8",
